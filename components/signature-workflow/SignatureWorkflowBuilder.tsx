@@ -40,6 +40,16 @@ import {
 } from 'lucide-react'
 
 // Types
+interface WorkflowDocument {
+  id: number
+  name: string
+  status: 'draft' | 'pending' | 'in_progress' | 'completed' | 'declined' | 'expired'
+  type: string
+  createdAt: string
+  folder: string
+  size: string
+}
+
 interface WorkflowNode {
   id: string
   type: 'trigger' | 'signer' | 'condition' | 'action' | 'ai-review' | 'notification' | 'end'
@@ -77,6 +87,7 @@ interface WorkflowConfig {
   retryAttempts: number
   stopOnError: boolean
   nodes: WorkflowNode[]
+  selectedDocuments: WorkflowDocument[]
   createdAt: string
   updatedAt: string
 }
@@ -310,6 +321,64 @@ const generateTemplateNodes = (templateId: string): WorkflowNode[] => {
   }
 }
 
+// Sample documents available for workflows
+const availableDocuments: WorkflowDocument[] = [
+  {
+    id: 1,
+    name: 'Employment Agreement - John Smith',
+    status: 'draft',
+    type: 'Contract',
+    createdAt: '2026-02-15',
+    folder: 'HR Documents',
+    size: '245 KB',
+  },
+  {
+    id: 2,
+    name: 'NDA - Acme Corporation',
+    status: 'draft',
+    type: 'NDA',
+    createdAt: '2026-02-28',
+    folder: 'Legal',
+    size: '156 KB',
+  },
+  {
+    id: 3,
+    name: 'Service Agreement - Project Alpha',
+    status: 'draft',
+    type: 'Agreement',
+    createdAt: '2026-03-01',
+    folder: 'Projects',
+    size: '512 KB',
+  },
+  {
+    id: 4,
+    name: 'Vendor Contract - Supplies Co',
+    status: 'draft',
+    type: 'Contract',
+    createdAt: '2026-03-03',
+    folder: 'Procurement',
+    size: '89 KB',
+  },
+  {
+    id: 5,
+    name: 'Partnership Agreement - TechStart',
+    status: 'draft',
+    type: 'Agreement',
+    createdAt: '2026-02-10',
+    folder: 'Partnerships',
+    size: '320 KB',
+  },
+  {
+    id: 6,
+    name: 'Lease Agreement - Office Space',
+    status: 'draft',
+    type: 'Lease',
+    createdAt: '2026-01-15',
+    folder: 'Facilities',
+    size: '412 KB',
+  },
+]
+
 // Default workflow
 const createDefaultWorkflow = (): WorkflowConfig => ({
   id: 'wf-' + Date.now(),
@@ -322,6 +391,7 @@ const createDefaultWorkflow = (): WorkflowConfig => ({
   retryAttempts: 3,
   stopOnError: false,
   nodes: [],
+  selectedDocuments: [],
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString()
 })
@@ -352,6 +422,9 @@ export function SignatureWorkflowBuilder({
   const [activeTab, setActiveTab] = useState<'properties' | 'settings'>('properties')
   const [isSaving, setIsSaving] = useState(false)
   const [showSuccess, setShowSuccess] = useState(false)
+  const [showDocumentPicker, setShowDocumentPicker] = useState(false)
+  const [documentSearchQuery, setDocumentSearchQuery] = useState('')
+  const [sidebarTab, setSidebarTab] = useState<'steps' | 'documents'>('steps')
   
   // History for undo/redo
   const [history, setHistory] = useState<HistoryState[]>([])
@@ -365,6 +438,37 @@ export function SignatureWorkflowBuilder({
   const [isDragging, setIsDragging] = useState(false)
   
   const canvasRef = useRef<HTMLDivElement>(null)
+
+  // Pre-select document when documentId is provided via URL params
+  useEffect(() => {
+    if (documentId && documentName) {
+      const docIdNum = parseInt(documentId)
+      const selectedDoc = availableDocuments.find(d => d.id === docIdNum)
+      if (selectedDoc) {
+        setWorkflow(prev => ({
+          ...prev,
+          selectedDocuments: [selectedDoc]
+        }))
+        setSidebarTab('documents')
+      } else {
+        // Document not in available list, create a placeholder
+        const newDoc: WorkflowDocument = {
+          id: docIdNum,
+          name: documentName,
+          status: 'draft',
+          type: 'Document',
+          createdAt: new Date().toISOString().split('T')[0],
+          folder: 'Documents',
+          size: '0 KB'
+        }
+        setWorkflow(prev => ({
+          ...prev,
+          selectedDocuments: [newDoc]
+        }))
+        setSidebarTab('documents')
+      }
+    }
+  }, [documentId, documentName])
 
   // Node type configurations
   const nodeTypes = {
@@ -616,9 +720,10 @@ export function SignatureWorkflowBuilder({
       return !config?.name || !config?.email
     })
     return {
-      isValid: invalidSigners.length === 0 && workflow.name.trim() !== '',
+      isValid: invalidSigners.length === 0 && workflow.name.trim() !== '' && workflow.selectedDocuments.length > 0,
       errors: [
         ...(!workflow.name.trim() ? ['Workflow name is required'] : []),
+        ...(workflow.selectedDocuments.length === 0 ? ['At least one document must be selected'] : []),
         ...invalidSigners.map(n => `${n.data.label}: Name and email required`)
       ]
     }
@@ -642,13 +747,26 @@ export function SignatureWorkflowBuilder({
 
   // Get workflow completion percentage
   const getCompletionPercentage = () => {
+    let totalSteps = 3 // name, documents, signers
+    let completedSteps = 0
+    
+    // Check workflow name
+    if (workflow.name.trim() !== '') completedSteps++
+    
+    // Check documents selected
+    if (workflow.selectedDocuments.length > 0) completedSteps++
+    
+    // Check signers
     const signerNodes = workflow.nodes.filter(n => n.type === 'signer')
-    if (signerNodes.length === 0) return 0
-    const validSigners = signerNodes.filter(n => {
-      const config = n.data.config as SignerConfig
-      return config?.name && config?.email
-    })
-    return Math.round((validSigners.length / signerNodes.length) * 100)
+    if (signerNodes.length > 0) {
+      const validSigners = signerNodes.filter(n => {
+        const config = n.data.config as SignerConfig
+        return config?.name && config?.email
+      })
+      if (validSigners.length === signerNodes.length) completedSteps++
+    }
+    
+    return Math.round((completedSteps / totalSteps) * 100)
   }
 
   // Drag handlers
@@ -841,54 +959,97 @@ export function SignatureWorkflowBuilder({
     <div className="flex h-full bg-slate-50">
       {/* Left Sidebar - Node Library */}
       <div className="w-72 bg-white border-r border-gray-200 flex flex-col shadow-sm">
-        {/* Sidebar Header */}
+        {/* Sidebar Header with Tabs */}
         <div className="p-4 border-b border-gray-100">
-          <div className="flex items-center justify-between mb-3">
-            <h3 className="font-semibold text-gray-900">Workflow Steps</h3>
-            <button 
-              onClick={() => setShowHelp(!showHelp)}
-              className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+          {/* Tab Switcher */}
+          <div className="flex gap-1 p-1 bg-gray-100 rounded-lg mb-3">
+            <button
+              onClick={() => setSidebarTab('steps')}
+              className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all ${
+                sidebarTab === 'steps' 
+                  ? 'bg-white text-gray-900 shadow-sm' 
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
             >
-              <HelpCircle size={18} />
+              Steps
+            </button>
+            <button
+              onClick={() => setSidebarTab('documents')}
+              className={`flex-1 py-2 px-3 rounded-md text-sm font-medium transition-all flex items-center justify-center gap-1.5 ${
+                sidebarTab === 'documents' 
+                  ? 'bg-white text-gray-900 shadow-sm' 
+                  : 'text-gray-500 hover:text-gray-700'
+              }`}
+            >
+              Documents
+              {workflow.selectedDocuments.length > 0 && (
+                <span className="w-5 h-5 rounded-full bg-indigo-500 text-white text-xs flex items-center justify-center">
+                  {workflow.selectedDocuments.length}
+                </span>
+              )}
             </button>
           </div>
-          
-          {/* Quick Tips */}
-          {showHelp && (
-            <div className="p-3 bg-indigo-50 rounded-lg mb-3 text-sm">
-              <div className="flex items-start gap-2">
-                <Lightbulb size={16} className="text-indigo-600 mt-0.5" />
-                <div>
-                  <p className="text-indigo-900 font-medium">Quick Tips</p>
-                  <ul className="text-indigo-700 mt-1 space-y-1 text-xs">
-                    <li>• Drag nodes by the grip handle</li>
-                    <li>• Click a step below to add it</li>
-                    <li>• Ctrl+Z to undo, Ctrl+S to save</li>
-                    <li>• Delete key removes selected node</li>
-                  </ul>
+
+          {sidebarTab === 'steps' && (
+            <>
+              <div className="flex items-center justify-between mb-3">
+                <h3 className="font-semibold text-gray-900">Workflow Steps</h3>
+                <button 
+                  onClick={() => setShowHelp(!showHelp)}
+                  className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition"
+                >
+                  <HelpCircle size={18} />
+                </button>
+              </div>
+              
+              {/* Quick Tips */}
+              {showHelp && (
+                <div className="p-3 bg-indigo-50 rounded-lg mb-3 text-sm">
+                  <div className="flex items-start gap-2">
+                    <Lightbulb size={16} className="text-indigo-600 mt-0.5" />
+                    <div>
+                      <p className="text-indigo-900 font-medium">Quick Tips</p>
+                      <ul className="text-indigo-700 mt-1 space-y-1 text-xs">
+                        <li>• Drag nodes by the grip handle</li>
+                        <li>• Click a step below to add it</li>
+                        <li>• Ctrl+Z to undo, Ctrl+S to save</li>
+                        <li>• Delete key removes selected node</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Completion Progress */}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500">Setup Progress</span>
+                  <span className="font-semibold text-gray-900">{getCompletionPercentage()}%</span>
+                </div>
+                <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500"
+                    style={{ width: `${getCompletionPercentage()}%` }}
+                  />
                 </div>
               </div>
-            </div>
+            </>
           )}
 
-          {/* Completion Progress */}
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-500">Setup Progress</span>
-              <span className="font-semibold text-gray-900">{getCompletionPercentage()}%</span>
+          {sidebarTab === 'documents' && (
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">Select Documents</h3>
+              <p className="text-xs text-gray-500">Choose documents to include in this workflow</p>
             </div>
-            <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
-              <div 
-                className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-500"
-                style={{ width: `${getCompletionPercentage()}%` }}
-              />
-            </div>
-          </div>
+          )}
         </div>
         
-        {/* Node Types */}
-        <div className="flex-1 overflow-y-auto p-4">
-          <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">Add Steps</p>
+        {/* Sidebar Content based on Tab */}
+        {sidebarTab === 'steps' && (
+          <>
+            {/* Node Types */}
+            <div className="flex-1 overflow-y-auto p-4">
+              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-3">Add Steps</p>
           
           <div className="space-y-2">
             {/* Signer Node */}
@@ -966,23 +1127,136 @@ export function SignatureWorkflowBuilder({
               <Plus size={16} className="text-gray-300 group-hover:text-purple-500" />
             </button>
           </div>
-        </div>
-
-        {/* Workflow Stats Footer */}
-        <div className="p-4 border-t border-gray-100 bg-gray-50/50">
-          <div className="grid grid-cols-2 gap-3">
-            <div className="text-center p-3 bg-white rounded-lg border border-gray-100">
-              <p className="text-2xl font-bold text-gray-900">
-                {workflow.nodes.filter(n => n.type === 'signer').length}
-              </p>
-              <p className="text-xs text-gray-500">Signers</p>
             </div>
-            <div className="text-center p-3 bg-white rounded-lg border border-gray-100">
-              <p className="text-2xl font-bold text-gray-900">{workflow.nodes.length}</p>
-              <p className="text-xs text-gray-500">Total Steps</p>
+          </>
+        )}
+
+        {/* Documents Tab Content */}
+        {sidebarTab === 'documents' && (
+          <>
+            <div className="flex-1 overflow-y-auto p-4">
+              {/* Search Documents */}
+              <div className="relative mb-4">
+                <input
+                  type="text"
+                  value={documentSearchQuery}
+                  onChange={(e) => setDocumentSearchQuery(e.target.value)}
+                  placeholder="Search documents..."
+                  className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                />
+                <svg className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
+
+              {/* Selected Documents */}
+              {workflow.selectedDocuments.length > 0 && (
+                <div className="mb-4">
+                  <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Selected ({workflow.selectedDocuments.length})</p>
+                  <div className="space-y-2">
+                    {workflow.selectedDocuments.map(doc => (
+                      <div 
+                        key={doc.id}
+                        className="flex items-center gap-3 p-3 bg-indigo-50 border-2 border-indigo-200 rounded-xl"
+                      >
+                        <div className="w-8 h-8 rounded-lg bg-indigo-500 flex items-center justify-center">
+                          <FileText size={14} className="text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-gray-900 truncate">{doc.name}</p>
+                          <p className="text-xs text-gray-500">{doc.type} • {doc.size}</p>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setWorkflow(prev => ({
+                              ...prev,
+                              selectedDocuments: prev.selectedDocuments.filter(d => d.id !== doc.id)
+                            }))
+                          }}
+                          className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-white rounded-lg transition"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Available Documents */}
+              <p className="text-xs font-medium text-gray-400 uppercase tracking-wider mb-2">Available Documents</p>
+              <div className="space-y-2">
+                {availableDocuments
+                  .filter(doc => 
+                    !workflow.selectedDocuments.find(d => d.id === doc.id) &&
+                    (documentSearchQuery === '' || 
+                     doc.name.toLowerCase().includes(documentSearchQuery.toLowerCase()) ||
+                     doc.type.toLowerCase().includes(documentSearchQuery.toLowerCase()) ||
+                     doc.folder.toLowerCase().includes(documentSearchQuery.toLowerCase()))
+                  )
+                  .map(doc => (
+                    <button
+                      key={doc.id}
+                      onClick={() => {
+                        setWorkflow(prev => ({
+                          ...prev,
+                          selectedDocuments: [...prev.selectedDocuments, doc]
+                        }))
+                      }}
+                      className="w-full flex items-center gap-3 p-3 rounded-xl border-2 border-gray-100 hover:border-indigo-300 hover:bg-indigo-50/50 transition-all group text-left"
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-gray-100 group-hover:bg-indigo-500 flex items-center justify-center transition-colors">
+                        <FileText size={14} className="text-gray-500 group-hover:text-white transition-colors" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium text-gray-900 truncate">{doc.name}</p>
+                        <p className="text-xs text-gray-500">{doc.type} • {doc.folder}</p>
+                      </div>
+                      <Plus size={16} className="text-gray-300 group-hover:text-indigo-500" />
+                    </button>
+                  ))}
+                
+                {availableDocuments.filter(doc => 
+                  !workflow.selectedDocuments.find(d => d.id === doc.id) &&
+                  (documentSearchQuery === '' || 
+                   doc.name.toLowerCase().includes(documentSearchQuery.toLowerCase()))
+                ).length === 0 && (
+                  <div className="text-center py-6 text-gray-400">
+                    <FileText size={24} className="mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">No documents found</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Documents Stats Footer */}
+            <div className="p-4 border-t border-gray-100 bg-gray-50/50">
+              <div className="text-center p-3 bg-white rounded-lg border border-gray-100">
+                <p className="text-2xl font-bold text-gray-900">
+                  {workflow.selectedDocuments.length}
+                </p>
+                <p className="text-xs text-gray-500">Documents Selected</p>
+              </div>
+            </div>
+          </>
+        )}
+
+        {sidebarTab === 'steps' && (
+          <div className="p-4 border-t border-gray-100 bg-gray-50/50">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="text-center p-3 bg-white rounded-lg border border-gray-100">
+                <p className="text-2xl font-bold text-gray-900">
+                  {workflow.nodes.filter(n => n.type === 'signer').length}
+                </p>
+                <p className="text-xs text-gray-500">Signers</p>
+              </div>
+              <div className="text-center p-3 bg-white rounded-lg border border-gray-100">
+                <p className="text-2xl font-bold text-gray-900">{workflow.nodes.length}</p>
+                <p className="text-xs text-gray-500">Total Steps</p>
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Main Canvas Area */}
@@ -1017,6 +1291,15 @@ export function SignatureWorkflowBuilder({
               }`}>
                 {workflow.status === 'active' ? '● Active' : workflow.status === 'paused' ? '◐ Paused' : '○ Draft'}
               </span>
+              {workflow.selectedDocuments.length > 0 && (
+                <button
+                  onClick={() => setSidebarTab('documents')}
+                  className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-semibold hover:bg-indigo-200 transition"
+                >
+                  <FileText size={12} />
+                  {workflow.selectedDocuments.length} {workflow.selectedDocuments.length === 1 ? 'Document' : 'Documents'}
+                </button>
+              )}
             </div>
           </div>
 

@@ -7,12 +7,38 @@ import { useRouter, usePathname } from 'next/navigation'
 // Types
 // ============================================================================
 
+// Role types for access control
+// platform_owner: Company owner who built SignPortal - highest level access with privacy controls
+export type UserRole = 'user' | 'manager' | 'admin' | 'enterprise_admin' | 'super_admin' | 'platform_owner'
+
+export const ROLE_LABELS: Record<UserRole, string> = {
+  user: 'User',
+  manager: 'Manager',
+  admin: 'Admin',
+  enterprise_admin: 'Enterprise Admin',
+  super_admin: 'Super Admin',
+  platform_owner: 'Platform Owner',
+}
+
+export const ROLE_DESCRIPTIONS: Record<UserRole, string> = {
+  user: 'Basic document signing access',
+  manager: 'Team management and workflows',
+  admin: 'Full organization control',
+  enterprise_admin: 'Enterprise-wide administration',
+  super_admin: 'Platform-wide super administrator',
+  platform_owner: 'SignPortal company owner - full platform control',
+}
+
+// Users allowed to switch roles for testing
+export const ROLE_SWITCH_USERS = ['sinhaankur827', 'sinhaankur827@gmail.com']
+
 export interface User {
   id: string
   email: string
   name: string
   designation: string
   department: string
+  role: UserRole
   avatar?: string
   phoneNumber?: string
   createdAt: Date
@@ -29,6 +55,8 @@ interface AuthContextType extends AuthState {
   login: (email: string, password: string) => Promise<boolean>
   logout: () => void
   updateUser: (updates: Partial<User>) => void
+  setRole: (role: UserRole) => void
+  canSwitchRoles: () => boolean
 }
 
 // ============================================================================
@@ -41,14 +69,32 @@ const PUBLIC_ROUTES = [
   '/signup',
   '/forgot-password',
   '/reset-password',
-  '/pricing',
-  '/about',
-  '/contact',
-  '/terms',
-  '/privacy',
+  // Marketing pages
+  '/products',
   '/features',
-  '/integrations',
+  '/pricing',
+  '/security',
+  '/api-integration',
+  // Company pages
+  '/about',
+  '/team',
+  '/careers',
+  '/contact',
+  // Resources pages
+  '/docs',
+  '/docs/architecture',
+  '/docs/api-reference',
+  '/docs/deployment',
   '/documentation',
+  '/api-reference',
+  '/support',
+  '/status',
+  // Legal pages
+  '/privacy',
+  '/terms',
+  '/cookies',
+  // Other public pages
+  '/integrations',
 ]
 
 const AUTH_ROUTES = ['/login', '/signup', '/forgot-password', '/reset-password']
@@ -139,12 +185,15 @@ export function AuthProvider({ children }: AuthProviderProps) {
       await new Promise(resolve => setTimeout(resolve, 1000))
 
       // Mock user for demo - replace with actual API response
+      const username = email.split('@')[0]
+      const canSwitch = ROLE_SWITCH_USERS.includes(username) || ROLE_SWITCH_USERS.includes(email)
       const user: User = {
         id: 'user_' + Math.random().toString(36).substr(2, 9),
         email,
         name: email.split('@')[0].replace(/[._]/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
         designation: 'manager',
         department: 'Engineering',
+        role: canSwitch ? 'super_admin' : 'user',
         createdAt: new Date(),
         lastLoginAt: new Date(),
       }
@@ -196,11 +245,33 @@ export function AuthProvider({ children }: AuthProviderProps) {
     })
   }, [])
 
+  const setRole = useCallback((role: UserRole) => {
+    setAuthState(prev => {
+      if (!prev.user) return prev
+
+      const updatedUser = { ...prev.user, role }
+      localStorage.setItem('signportal_user', JSON.stringify(updatedUser))
+
+      return {
+        ...prev,
+        user: updatedUser,
+      }
+    })
+  }, [])
+
+  const canSwitchRoles = useCallback((): boolean => {
+    if (!authState.user) return false
+    const username = authState.user.email.split('@')[0]
+    return ROLE_SWITCH_USERS.includes(username) || ROLE_SWITCH_USERS.includes(authState.user.email)
+  }, [authState.user])
+
   const value: AuthContextType = {
     ...authState,
     login,
     logout,
     updateUser,
+    setRole,
+    canSwitchRoles,
   }
 
   return (

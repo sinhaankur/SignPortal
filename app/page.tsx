@@ -418,8 +418,11 @@ export default function LandingPage() {
         <div className="max-w-[1060px] mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-serif text-white mb-4">
-              Trusted by businesses worldwide
+              Private E-Signature Application
             </h2>
+            <p className="text-white/70 text-lg max-w-2xl mx-auto">
+              Online and Offline Signing • Secured • On-Premises Deployment
+            </p>
           </div>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {[
@@ -453,7 +456,7 @@ export default function LandingPage() {
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
-            <a href="/docs/ARCHITECTURE.md" className="group bg-white rounded-2xl border border-[#37322f]/10 p-6 hover:shadow-lg transition-all">
+            <a href="/docs/architecture" className="group bg-white rounded-2xl border border-[#37322f]/10 p-6 hover:shadow-lg transition-all cursor-pointer">
               <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
@@ -463,7 +466,7 @@ export default function LandingPage() {
               <p className="text-sm text-[#37322f]/60">Understand the system architecture and deployment options</p>
             </a>
 
-            <a href="/docs/API_REFERENCE.md" className="group bg-white rounded-2xl border border-[#37322f]/10 p-6 hover:shadow-lg transition-all">
+            <a href="/docs/api-reference" className="group bg-white rounded-2xl border border-[#37322f]/10 p-6 hover:shadow-lg transition-all cursor-pointer">
               <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
@@ -473,7 +476,7 @@ export default function LandingPage() {
               <p className="text-sm text-[#37322f]/60">Complete REST API documentation with code examples</p>
             </a>
 
-            <a href="/docs/DEPLOYMENT.md" className="group bg-white rounded-2xl border border-[#37322f]/10 p-6 hover:shadow-lg transition-all">
+            <a href="/docs/deployment" className="group bg-white rounded-2xl border border-[#37322f]/10 p-6 hover:shadow-lg transition-all cursor-pointer">
               <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
@@ -482,6 +485,162 @@ export default function LandingPage() {
               <h3 className="font-semibold text-[#37322f] mb-2">Deployment Guide</h3>
               <p className="text-sm text-[#37322f]/60">Docker, Kubernetes, and on-premises installation</p>
             </a>
+          </div>
+        </div>
+      </section>
+
+      {/* Enterprise-Grade Security Section */}
+      <section className="py-20 md:py-28 bg-white">
+        <div className="max-w-[1060px] mx-auto px-4">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full border border-green-200 mb-6">
+              <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <span className="text-sm font-medium text-green-700">Security</span>
+            </div>
+            <h2 className="text-3xl md:text-5xl font-serif text-[#37322f] mb-4">
+              Enterprise-Grade Security
+            </h2>
+            <p className="text-lg text-[#37322f]/70 max-w-[600px] mx-auto">
+              Built from the ground up with security as the foundation
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* Authentication */}
+            <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl border border-slate-200 p-8">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center">
+                  <svg className="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-semibold text-[#37322f]">Authentication</h3>
+              </div>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-medium text-[#37322f]">LDAP/Active Directory Integration</p>
+                    <p className="text-sm text-[#37322f]/60">Seamless enterprise identity management</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-medium text-[#37322f]">SAML 2.0 Single Sign-On</p>
+                    <p className="text-sm text-[#37322f]/60">One-click access with existing credentials</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-medium text-[#37322f]">Multi-Factor Authentication</p>
+                    <p className="text-sm text-[#37322f]/60">TOTP, SMS, Email, and hardware keys</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-3.5 h-3.5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-medium text-[#37322f]">JWT Token-based Sessions</p>
+                    <p className="text-sm text-[#37322f]/60">Secure, stateless authentication</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+
+            {/* Data Protection */}
+            <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-2xl border border-slate-200 p-8">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center">
+                  <svg className="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                </div>
+                <h3 className="text-2xl font-semibold text-[#37322f]">Data Protection</h3>
+              </div>
+              <ul className="space-y-4">
+                <li className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-medium text-[#37322f]">AES-256 Encryption at Rest</p>
+                    <p className="text-sm text-[#37322f]/60">Military-grade data protection</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-medium text-[#37322f]">TLS 1.3 Encryption in Transit</p>
+                    <p className="text-sm text-[#37322f]/60">Latest protocol for secure communication</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-medium text-[#37322f]">HSM Key Management</p>
+                    <p className="text-sm text-[#37322f]/60">Hardware security module support</p>
+                  </div>
+                </li>
+                <li className="flex items-start gap-3">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <svg className="w-3.5 h-3.5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p className="font-medium text-[#37322f]">Cryptographic Signature Sealing</p>
+                    <p className="text-sm text-[#37322f]/60">Tamper-evident document integrity</p>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Security Assurance */}
+          <div className="mt-12 bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl border border-green-200 p-6">
+            <div className="flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+              <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center flex-shrink-0">
+                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <div>
+                <h4 className="text-lg font-semibold text-[#37322f] mb-1">Your Data Stays Within Your Infrastructure</h4>
+                <p className="text-[#37322f]/70">
+                  With on-premises deployment, all documents and signatures remain secured within your own ecosystem. 
+                  No external data transfer, no third-party access — complete control over your sensitive information.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>

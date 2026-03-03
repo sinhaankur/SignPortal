@@ -1,0 +1,93 @@
+# SignPortal - Docker Ignore File
+# Exclude files and directories from Docker build context
+
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+.pnpm-debug.log
+
+# Next.js build output
+.next
+out
+
+# Testing
+coverage
+.nyc_output
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+__tests__
+__mocks__
+
+# Development
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+
+# Docker
+Dockerfile*
+docker-compose*
+.docker
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+*~
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+docs
+README*
+CHANGELOG*
+LICENSE
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Misc
+*.log
+*.tmp
+*.temp
+.cache
+.npm
+.eslintcache
+.stylelintcache
+
+# Build artifacts
+dist
+build
+
+# Storybook
+.storybook
+storybook-static
+
+# Cypress
+cypress
+cypress.config.*
+
+# Playwright
+playwright-report
+test-results
+
+# TypeScript
+*.tsbuildinfo
+
+# Debug
+*.debug
+
+# Local development scripts
+scripts/dev-*
+*.local.sh

@@ -1,10 +1,16 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { SignatureWorkflowBuilder } from '@/components/signature-workflow/SignatureWorkflowBuilder'
+import { Suspense } from 'react'
 
-export default function NewWorkflowPage() {
+function NewWorkflowContent() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  
+  // Read document info from query params
+  const documentId = searchParams.get('documentId')
+  const documentName = searchParams.get('documentName')
 
   const handleSave = (workflow: any) => {
     console.log('Workflow saved:', workflow)
@@ -23,10 +29,20 @@ export default function NewWorkflowPage() {
   return (
     <div className="h-screen">
       <SignatureWorkflowBuilder 
+        documentId={documentId || undefined}
+        documentName={documentName || undefined}
         onSave={handleSave}
         onPublish={handlePublish}
         onClose={handleClose}
       />
     </div>
+  )
+}
+
+export default function NewWorkflowPage() {
+  return (
+    <Suspense fallback={<div className="h-screen flex items-center justify-center">Loading...</div>}>
+      <NewWorkflowContent />
+    </Suspense>
   )
 }
