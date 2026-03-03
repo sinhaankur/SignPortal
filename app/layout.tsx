@@ -20,10 +20,10 @@ const instrumentSerif = Instrument_Serif({
 })
 
 export const metadata: Metadata = {
-  title: "SignPortal - Effortless Custom Contract Billing",
+  title: "SignPortal - Enterprise E-Signature Platform",
   description:
-    "Streamline your billing process with seamless automation for every custom contract, tailored by SignPortal.",
-    generator: 'v0.app'
+    "Secure electronic signatures with powerful workflows, custom forms, and bank-level security. Get documents signed faster with SignPortal.",
+    generator: 'Next.js'
 }
 
 export default function RootLayout({
