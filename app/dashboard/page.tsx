@@ -49,7 +49,10 @@ export default function DashboardPage() {
         <h2 className="text-xl font-semibold text-[#37322f] mb-4">Quick Actions</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {/* Create Document Card */}
-          <div className="bg-white rounded-xl p-6 border border-[#37322f]/10 hover:shadow-lg hover:border-[#37322f]/20 transition-all cursor-pointer group">
+          <div 
+            onClick={() => navigateTo('/documents/new')}
+            className="bg-white rounded-xl p-6 border border-[#37322f]/10 hover:shadow-lg hover:border-[#37322f]/20 transition-all cursor-pointer group"
+          >
             <div className="w-12 h-12 bg-[#37322f] rounded-xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -57,19 +60,19 @@ export default function DashboardPage() {
             </div>
             <h3 className="text-lg font-semibold text-[#37322f] mb-2">Create Document</h3>
             <p className="text-[#37322f]/60 text-sm mb-4">Upload and send a document for signing</p>
-            <button
-              onClick={() => navigateTo('/documents/new')}
-              className="text-[#37322f] font-medium hover:underline text-sm inline-flex items-center gap-1"
-            >
+            <span className="text-[#37322f] font-medium hover:underline text-sm inline-flex items-center gap-1">
               Get started 
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-            </button>
+            </span>
           </div>
 
           {/* Workflows Card */}
-          <div className="bg-white rounded-xl p-6 border border-[#37322f]/10 hover:shadow-lg hover:border-[#37322f]/20 transition-all cursor-pointer group">
+          <div 
+            onClick={() => navigateTo('/workflows')}
+            className="bg-white rounded-xl p-6 border border-[#37322f]/10 hover:shadow-lg hover:border-[#37322f]/20 transition-all cursor-pointer group"
+          >
             <div className="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -77,19 +80,19 @@ export default function DashboardPage() {
             </div>
             <h3 className="text-lg font-semibold text-[#37322f] mb-2">Workflows</h3>
             <p className="text-[#37322f]/60 text-sm mb-4">Create multi-signer signing workflows</p>
-            <button
-              onClick={() => navigateTo('/workflows')}
-              className="text-[#37322f] font-medium hover:underline text-sm inline-flex items-center gap-1"
-            >
+            <span className="text-[#37322f] font-medium hover:underline text-sm inline-flex items-center gap-1">
               Build workflow
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-            </button>
+            </span>
           </div>
 
           {/* Track Signatures Card */}
-          <div className="bg-white rounded-xl p-6 border border-[#37322f]/10 hover:shadow-lg hover:border-[#37322f]/20 transition-all cursor-pointer group">
+          <div 
+            onClick={() => navigateTo('/documents')}
+            className="bg-white rounded-xl p-6 border border-[#37322f]/10 hover:shadow-lg hover:border-[#37322f]/20 transition-all cursor-pointer group"
+          >
             <div className="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -97,19 +100,19 @@ export default function DashboardPage() {
             </div>
             <h3 className="text-lg font-semibold text-[#37322f] mb-2">Track Signatures</h3>
             <p className="text-[#37322f]/60 text-sm mb-4">Monitor document signing progress</p>
-            <button
-              onClick={() => navigateTo('/documents')}
-              className="text-[#37322f] font-medium hover:underline text-sm inline-flex items-center gap-1"
-            >
+            <span className="text-[#37322f] font-medium hover:underline text-sm inline-flex items-center gap-1">
               View status
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-            </button>
+            </span>
           </div>
 
           {/* Team Management Card */}
-          <div className="bg-white rounded-xl p-6 border border-[#37322f]/10 hover:shadow-lg hover:border-[#37322f]/20 transition-all cursor-pointer group">
+          <div 
+            onClick={() => navigateTo('/settings/team')}
+            className="bg-white rounded-xl p-6 border border-[#37322f]/10 hover:shadow-lg hover:border-[#37322f]/20 transition-all cursor-pointer group"
+          >
             <div className="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform">
               <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -117,15 +120,12 @@ export default function DashboardPage() {
             </div>
             <h3 className="text-lg font-semibold text-[#37322f] mb-2">Team Management</h3>
             <p className="text-[#37322f]/60 text-sm mb-4">Manage team members & permissions</p>
-            <button
-              onClick={() => navigateTo('/team')}
-              className="text-[#37322f] font-medium hover:underline text-sm inline-flex items-center gap-1"
-            >
+            <span className="text-[#37322f] font-medium hover:underline text-sm inline-flex items-center gap-1">
               Manage team
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
-            </button>
+            </span>
           </div>
         </div>
 
