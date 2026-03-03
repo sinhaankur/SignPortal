@@ -171,59 +171,57 @@ export default function DashboardPage() {
             </p>
           </div>
 
-          {/* Role Switcher Dropdown */}
-          {canSwitchRoles() && (
-            <div className="relative">
-              <button
-                onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center gap-3 px-4 py-2.5 bg-[#37322f] text-white rounded-xl hover:bg-[#4a433f] transition-colors min-w-[200px]"
-              >
-                <div className={`w-2.5 h-2.5 rounded-full ${ROLE_COLORS[currentRole]}`} />
-                <span className="flex-1 text-left text-sm font-medium">{ROLE_LABELS[currentRole]}</span>
-                <svg className={`w-4 h-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                </svg>
-              </button>
+          {/* Role Switcher Dropdown - Always visible in test mode */}
+          <div className="relative">
+            <button
+              onClick={() => setDropdownOpen(!dropdownOpen)}
+              className="flex items-center gap-3 px-4 py-2.5 bg-[#37322f] text-white rounded-xl hover:bg-[#4a433f] transition-colors min-w-[200px]"
+            >
+              <div className={`w-2.5 h-2.5 rounded-full ${ROLE_COLORS[currentRole]}`} />
+              <span className="flex-1 text-left text-sm font-medium">{ROLE_LABELS[currentRole]}</span>
+              <svg className={`w-4 h-4 transition-transform ${dropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
 
-              {dropdownOpen && (
-                <>
-                  <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
-                  <div className="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-[#37322f]/10 z-20 overflow-hidden">
-                    <div className="px-4 py-3 bg-[#37322f]/5 border-b border-[#37322f]/10">
-                      <p className="text-xs font-semibold text-[#37322f]/60 uppercase tracking-wider">Switch Role (Test Mode)</p>
-                    </div>
-                    <div className="py-2">
-                      {ALL_ROLES.map((role) => (
-                        <button
-                          key={role}
-                          onClick={() => {
-                            setRole(role)
-                            setDropdownOpen(false)
-                          }}
-                          className={`w-full px-4 py-3 flex items-start gap-3 hover:bg-[#37322f]/5 transition-colors ${
-                            currentRole === role ? 'bg-[#37322f]/10' : ''
-                          }`}
-                        >
-                          <div className={`w-2.5 h-2.5 rounded-full mt-1.5 ${ROLE_COLORS[role]}`} />
-                          <div className="flex-1 text-left">
-                            <p className={`text-sm font-medium ${currentRole === role ? 'text-[#37322f]' : 'text-[#37322f]/80'}`}>
-                              {ROLE_LABELS[role]}
-                            </p>
-                            <p className="text-xs text-[#37322f]/50">{ROLE_DESCRIPTIONS[role]}</p>
-                          </div>
-                          {currentRole === role && (
-                            <svg className="w-4 h-4 text-green-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                            </svg>
-                          )}
-                        </button>
-                      ))}
-                    </div>
+            {dropdownOpen && (
+              <>
+                <div className="fixed inset-0 z-10" onClick={() => setDropdownOpen(false)} />
+                <div className="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-[#37322f]/10 z-20 overflow-hidden">
+                  <div className="px-4 py-3 bg-[#37322f]/5 border-b border-[#37322f]/10">
+                    <p className="text-xs font-semibold text-[#37322f]/60 uppercase tracking-wider">Switch Role (Test Mode)</p>
                   </div>
-                </>
-              )}
-            </div>
-          )}
+                  <div className="py-2">
+                    {ALL_ROLES.map((role) => (
+                      <button
+                        key={role}
+                        onClick={() => {
+                          setRole(role)
+                          setDropdownOpen(false)
+                        }}
+                        className={`w-full px-4 py-3 flex items-start gap-3 hover:bg-[#37322f]/5 transition-colors ${
+                          currentRole === role ? 'bg-[#37322f]/10' : ''
+                        }`}
+                      >
+                        <div className={`w-2.5 h-2.5 rounded-full mt-1.5 ${ROLE_COLORS[role]}`} />
+                        <div className="flex-1 text-left">
+                          <p className={`text-sm font-medium ${currentRole === role ? 'text-[#37322f]' : 'text-[#37322f]/80'}`}>
+                            {ROLE_LABELS[role]}
+                          </p>
+                          <p className="text-xs text-[#37322f]/50">{ROLE_DESCRIPTIONS[role]}</p>
+                        </div>
+                        {currentRole === role && (
+                          <svg className="w-4 h-4 text-green-500 mt-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Stats Grid - Role-based */}
