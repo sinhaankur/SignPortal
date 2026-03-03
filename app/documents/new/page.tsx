@@ -1,14 +1,14 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { TemplateSelector } from '@/components/TemplateSelector'
 import { FileUploadComponent, type UploadedFile } from '@/components/FileUploadComponent'
+import ProtectedLayout from '@/components/layouts/protected-layout'
 
 export default function NewDocumentPage() {
   const router = useRouter()
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [step, setStep] = useState<'template' | 'details' | 'upload' | 'workflow' | 'success'>('template')
   const [documentName, setDocumentName] = useState('')
   const [documentType, setDocumentType] = useState('CONTRACT')
@@ -16,15 +16,6 @@ export default function NewDocumentPage() {
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null)
   const [uploadedFile, setUploadedFile] = useState<UploadedFile | null>(null)
   const [documentId, setDocumentId] = useState('')
-
-  useEffect(() => {
-    const loggedIn = localStorage.getItem('isLoggedIn')
-    if (!loggedIn) {
-      router.push('/login')
-      return
-    }
-    setIsLoggedIn(true)
-  }, [router])
 
   const handleTemplateSelect = (template: any) => {
     setSelectedTemplate(template.id)
@@ -91,23 +82,12 @@ export default function NewDocumentPage() {
     }, 2000)
   }
 
-  if (!isLoggedIn) return null
-
   return (
-    <div className="min-h-screen bg-[#f7f5f3]">
-      <header className="w-full border-b border-[#37322f]/6 bg-white">
-        <div className="max-w-[1060px] mx-auto px-4">
-          <nav className="flex items-center justify-between py-4">
-            <Link href="/" className="text-[#37322f] font-semibold text-lg">SignPortal</Link>
-            <Link href="/dashboard" className="text-[#37322f] hover:bg-[#37322f]/5 px-4 py-2 rounded">Dashboard</Link>
-          </nav>
-        </div>
-      </header>
-
-      {/* Progress Indicators */}
-      {(step === 'template' || step === 'details' || step === 'upload') && (
-        <div className="bg-white border-b border-[#37322f]/6">
-          <div className="max-w-[1060px] mx-auto px-4 py-8">
+    <ProtectedLayout>
+      <div className="max-w-6xl mx-auto">
+        {/* Progress Indicators */}
+        {(step === 'template' || step === 'details' || step === 'upload') && (
+          <div className="bg-white rounded-xl border border-[#37322f]/10 mb-8 p-6">
             <div className="flex items-center justify-between">
               <div className={`flex items-center gap-3 ${step === 'template' ? 'opacity-100' : 'opacity-60'}`}>
                 <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold ${step === 'template' ? 'bg-[#37322f] text-white' : 'bg-[#37322f]/20 text-[#37322f]'}`}>1</div>
@@ -134,8 +114,7 @@ export default function NewDocumentPage() {
               </div>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
       {step === 'template' ? (
         <div className="max-w-4xl mx-auto px-4 py-12">
@@ -248,7 +227,7 @@ export default function NewDocumentPage() {
           </div>
         </div>
       ) : step === 'success' ? (
-        <div className="max-w-2xl mx-auto px-4 py-12">
+        <div className="max-w-2xl mx-auto py-12">
           <div className="text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-green-100 mb-8">
               <svg className="w-10 h-10 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -265,6 +244,7 @@ export default function NewDocumentPage() {
           </div>
         </div>
       ) : null}
-    </div>
+      </div>
+    </ProtectedLayout>
   )
 }
