@@ -260,9 +260,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
   }, [])
 
   const canSwitchRoles = useCallback((): boolean => {
-    if (!authState.user) return false
-    const username = authState.user.email.split('@')[0]
-    return ROLE_SWITCH_USERS.includes(username) || ROLE_SWITCH_USERS.includes(authState.user.email)
+    // Enable role switching for all authenticated users (demo/test mode)
+    // In production, this should check against ROLE_SWITCH_USERS list
+    return !!authState.user
   }, [authState.user])
 
   const value: AuthContextType = {
