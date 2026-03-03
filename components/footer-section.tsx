@@ -6,20 +6,20 @@ export default function FooterSection() {
   const footerLinks = {
     product: [
       { label: 'All Products', href: '/products' },
-      { label: 'Features', href: '/#features' },
+      { label: 'Features', href: '/features' },
       { label: 'Pricing', href: '/#pricing' },
-      { label: 'Security & Compliance', href: '/#security' },
-      { label: 'API Integration', href: '/#docs' },
+      { label: 'Security & Compliance', href: '/security' },
+      { label: 'API Integration', href: '/api-integration' },
     ],
     company: [
       { label: 'About us', href: '/about' },
       { label: 'Our team', href: '/team' },
       { label: 'Careers', href: '/careers' },
-      { label: 'Contact', href: '/#contact' },
+      { label: 'Contact', href: '/contact' },
     ],
     resources: [
-      { label: 'Documentation', href: '/#docs' },
-      { label: 'API Reference', href: '/docs/api' },
+      { label: 'Documentation', href: '/docs' },
+      { label: 'API Reference', href: '/api-reference' },
       { label: 'Support', href: '/support' },
       { label: 'Status', href: '/status' },
     ],
