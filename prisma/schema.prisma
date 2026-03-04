@@ -1,0 +1,607 @@
+// SignPortal Database Schema
+// PostgreSQL with Neon Serverless
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+enum UserRole {
+  user
+  manager
+  admin
+  enterprise_admin
+  super_admin
+  platform_owner
+}
+
+enum DocumentStatus {
+  draft
+  pending
+  in_progress
+  completed
+  expired
+  cancelled
+  rejected
+}
+
+enum SignatureType {
+  draw
+  type
+  upload
+  certificate
+}
+
+enum WorkflowStatus {
+  draft
+  active
+  paused
+  completed
+  cancelled
+}
+
+enum NotificationType {
+  signature_request
+  signature_completed
+  document_expired
+  workflow_update
+  system_alert
+}
+
+enum AuditAction {
+  create
+  read
+  update
+  delete
+  sign
+  approve
+  reject
+  login
+  logout
+  export
+  share
+}
+
+enum SubscriptionStatus {
+  active
+  cancelled
+  past_due
+  trialing
+  paused
+}
+
+enum BillingCycle {
+  monthly
+  yearly
+}
+
+// ============================================================================
+// CORE ENTITIES
+// ============================================================================
+
+model Enterprise {
+  id                String    @id @default(cuid())
+  name              String
+  slug              String    @unique
+  domain            String?   @unique
+  logo              String?
+  primaryColor      String?   @default("#37322f")
+  
+  // Settings
+  maxUsers          Int       @default(50)
+  maxDocuments      Int       @default(1000)
+  allowOfflineMode  Boolean   @default(false)
+  ssoEnabled        Boolean   @default(false)
+  ssoProvider       String?
+  ssoConfig         Json?
+  
+  // Billing
+  stripeCustomerId  String?   @unique
+  subscriptionId    String?
+  subscriptionStatus SubscriptionStatus @default(trialing)
+  billingCycle      BillingCycle @default(monthly)
+  planId            String?
+  
+  // Metadata
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  // Relations
+  organizations     Organization[]
+  users             User[]
+  documents         Document[]
+  workflows         Workflow[]
+  auditLogs         AuditLog[]
+  invoices          Invoice[]
+  
+  @@index([slug])
+  @@index([domain])
+}
+
+model Organization {
+  id                String    @id @default(cuid())
+  name              String
+  slug              String
+  description       String?
+  
+  enterpriseId      String
+  enterprise        Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  
+  settings          Json?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  users             User[]
+  documents         Document[]
+  workflows         Workflow[]
+  teams             Team[]
+  
+  @@unique([enterpriseId, slug])
+  @@index([enterpriseId])
+}
+
+model Team {
+  id                String    @id @default(cuid())
+  name              String
+  description       String?
+  
+  organizationId    String
+  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  
+  leadId            String?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  members           TeamMember[]
+  
+  @@index([organizationId])
+}
+
+model TeamMember {
+  id                String    @id @default(cuid())
+  teamId            String
+  team              Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role              String    @default("member")
+  joinedAt          DateTime  @default(now())
+  
+  @@unique([teamId, userId])
+  @@index([teamId])
+  @@index([userId])
+}
+
+model User {
+  id                String    @id @default(cuid())
+  email             String    @unique
+  passwordHash      String?
+  
+  name              String
+  avatar            String?
+  phoneNumber       String?
+  designation       String?
+  department        String?
+  
+  role              UserRole  @default(user)
+  isActive          Boolean   @default(true)
+  emailVerified     DateTime?
+  
+  enterpriseId      String?
+  enterprise        Enterprise? @relation(fields: [enterpriseId], references: [id], onDelete: SetNull)
+  organizationId    String?
+  organization      Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  
+  mfaEnabled        Boolean   @default(false)
+  mfaSecret         String?
+  
+  lastLoginAt       DateTime?
+  lastLoginIp       String?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  documents         Document[]
+  signatures        Signature[]
+  signatureRequests SignatureRequest[]
+  auditLogs         AuditLog[]
+  notifications     Notification[]
+  teamMemberships   TeamMember[]
+  sessions          Session[]
+  
+  @@index([email])
+  @@index([enterpriseId])
+  @@index([organizationId])
+}
+
+model Session {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  token             String    @unique
+  expiresAt         DateTime
+  ipAddress         String?
+  userAgent         String?
+  
+  createdAt         DateTime  @default(now())
+  
+  @@index([userId])
+  @@index([token])
+}
+
+// ============================================================================
+// DOCUMENT & SIGNATURE ENTITIES
+// ============================================================================
+
+model Document {
+  id                String    @id @default(cuid())
+  name              String
+  description       String?
+  
+  fileName          String
+  fileUrl           String
+  fileSize          Int
+  mimeType          String    @default("application/pdf")
+  pageCount         Int       @default(1)
+  
+  status            DocumentStatus @default(draft)
+  
+  ownerId           String
+  owner             User      @relation(fields: [ownerId], references: [id])
+  
+  enterpriseId      String?
+  enterprise        Enterprise? @relation(fields: [enterpriseId], references: [id], onDelete: SetNull)
+  organizationId    String?
+  organization      Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  
+  folderId          String?
+  folder            Folder?   @relation(fields: [folderId], references: [id], onDelete: SetNull)
+  
+  workflowId        String?
+  workflow          Workflow? @relation(fields: [workflowId], references: [id], onDelete: SetNull)
+  
+  expiresAt         DateTime?
+  reminderEnabled   Boolean   @default(true)
+  reminderDays      Int       @default(3)
+  
+  completedAt       DateTime?
+  
+  signedFileUrl     String?
+  certificateUrl    String?
+  
+  metadata          Json?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  signatures        Signature[]
+  signatureRequests SignatureRequest[]
+  signatureFields   SignatureField[]
+  auditLogs         AuditLog[]
+  
+  @@index([ownerId])
+  @@index([enterpriseId])
+  @@index([organizationId])
+  @@index([status])
+  @@index([workflowId])
+}
+
+model Folder {
+  id                String    @id @default(cuid())
+  name              String
+  parentId          String?
+  parent            Folder?   @relation("FolderTree", fields: [parentId], references: [id], onDelete: Cascade)
+  children          Folder[]  @relation("FolderTree")
+  
+  ownerId           String
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  documents         Document[]
+  
+  @@index([ownerId])
+  @@index([parentId])
+}
+
+model SignatureField {
+  id                String    @id @default(cuid())
+  documentId        String
+  document          Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  pageNumber        Int
+  x                 Float
+  y                 Float
+  width             Float
+  height            Float
+  
+  required          Boolean   @default(true)
+  type              String    @default("signature")
+  signerId          String?
+  
+  createdAt         DateTime  @default(now())
+  
+  @@index([documentId])
+}
+
+model SignatureRequest {
+  id                String    @id @default(cuid())
+  documentId        String
+  document          Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  requesterId       String
+  requester         User      @relation(fields: [requesterId], references: [id])
+  
+  signerEmail       String
+  signerName        String?
+  signerPhone       String?
+  
+  order             Int       @default(1)
+  
+  status            String    @default("pending")
+  viewedAt          DateTime?
+  signedAt          DateTime?
+  declinedAt        DateTime?
+  declineReason     String?
+  
+  accessToken       String    @unique @default(cuid())
+  expiresAt         DateTime?
+  
+  lastReminderAt    DateTime?
+  reminderCount     Int       @default(0)
+  
+  message           String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  signature         Signature?
+  
+  @@index([documentId])
+  @@index([signerEmail])
+  @@index([accessToken])
+}
+
+model Signature {
+  id                String    @id @default(cuid())
+  documentId        String
+  document          Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  
+  signerId          String?
+  signer            User?     @relation(fields: [signerId], references: [id])
+  
+  requestId         String?   @unique
+  request           SignatureRequest? @relation(fields: [requestId], references: [id])
+  
+  type              SignatureType
+  signatureData     String
+  fontFamily        String?
+  
+  pageNumber        Int
+  x                 Float
+  y                 Float
+  width             Float
+  height            Float
+  
+  ipAddress         String?
+  userAgent         String?
+  geoLocation       Json?
+  
+  certificateHash   String?
+  certificateData   Json?
+  
+  signedAt          DateTime  @default(now())
+  
+  @@index([documentId])
+  @@index([signerId])
+}
+
+// ============================================================================
+// WORKFLOW ENTITIES
+// ============================================================================
+
+model Workflow {
+  id                String    @id @default(cuid())
+  name              String
+  description       String?
+  
+  type              String    @default("sequential")
+  
+  ownerId           String
+  
+  enterpriseId      String?
+  enterprise        Enterprise? @relation(fields: [enterpriseId], references: [id], onDelete: SetNull)
+  organizationId    String?
+  organization      Organization? @relation(fields: [organizationId], references: [id], onDelete: SetNull)
+  
+  status            WorkflowStatus @default(draft)
+  
+  config            Json?
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  completedAt       DateTime?
+  
+  steps             WorkflowStep[]
+  documents         Document[]
+  
+  @@index([ownerId])
+  @@index([enterpriseId])
+  @@index([status])
+}
+
+model WorkflowStep {
+  id                String    @id @default(cuid())
+  workflowId        String
+  workflow          Workflow  @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  
+  name              String
+  type              String
+  order             Int
+  
+  assigneeEmail     String?
+  assigneeRole      String?
+  
+  status            String    @default("pending")
+  completedAt       DateTime?
+  completedBy       String?
+  
+  config            Json?
+  
+  createdAt         DateTime  @default(now())
+  
+  @@index([workflowId])
+  @@index([order])
+}
+
+// ============================================================================
+// AUDIT & NOTIFICATIONS
+// ============================================================================
+
+model AuditLog {
+  id                String    @id @default(cuid())
+  
+  userId            String?
+  user              User?     @relation(fields: [userId], references: [id], onDelete: SetNull)
+  
+  enterpriseId      String?
+  enterprise        Enterprise? @relation(fields: [enterpriseId], references: [id], onDelete: SetNull)
+  
+  action            AuditAction
+  resource          String
+  resourceId        String?
+  
+  documentId        String?
+  document          Document? @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  
+  details           Json?
+  ipAddress         String?
+  userAgent         String?
+  
+  createdAt         DateTime  @default(now())
+  
+  @@index([userId])
+  @@index([enterpriseId])
+  @@index([action])
+  @@index([resourceId])
+  @@index([createdAt])
+}
+
+model Notification {
+  id                String    @id @default(cuid())
+  userId            String
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  type              NotificationType
+  title             String
+  message           String
+  
+  resourceType      String?
+  resourceId        String?
+  
+  read              Boolean   @default(false)
+  readAt            DateTime?
+  
+  emailSent         Boolean   @default(false)
+  emailSentAt       DateTime?
+  
+  createdAt         DateTime  @default(now())
+  
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+}
+
+// ============================================================================
+// BILLING ENTITIES
+// ============================================================================
+
+model Plan {
+  id                String    @id @default(cuid())
+  name              String
+  slug              String    @unique
+  description       String?
+  
+  priceMonthly      Int
+  priceYearly       Int
+  currency          String    @default("USD")
+  
+  stripePriceIdMonthly String?
+  stripePriceIdYearly  String?
+  stripeProductId   String?
+  
+  maxUsers          Int
+  maxDocuments      Int
+  maxStorage        Int
+  
+  features          Json?
+  
+  isActive          Boolean   @default(true)
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([slug])
+}
+
+model Invoice {
+  id                String    @id @default(cuid())
+  enterpriseId      String
+  enterprise        Enterprise @relation(fields: [enterpriseId], references: [id], onDelete: Cascade)
+  
+  stripeInvoiceId   String?   @unique
+  
+  amount            Int
+  currency          String    @default("USD")
+  
+  status            String
+  
+  periodStart       DateTime
+  periodEnd         DateTime
+  dueDate           DateTime?
+  paidAt            DateTime?
+  
+  invoiceUrl        String?
+  
+  createdAt         DateTime  @default(now())
+  
+  @@index([enterpriseId])
+  @@index([status])
+}
+
+// ============================================================================
+// TEMPLATES
+// ============================================================================
+
+model Template {
+  id                String    @id @default(cuid())
+  name              String
+  description       String?
+  
+  fileUrl           String
+  fileName          String
+  
+  ownerId           String
+  enterpriseId      String?
+  
+  isPublic          Boolean   @default(false)
+  
+  fields            Json?
+  
+  usageCount        Int       @default(0)
+  
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  
+  @@index([ownerId])
+  @@index([enterpriseId])
+}
