@@ -7,17 +7,17 @@ import type { NextRequest } from 'next/server'
 
 const rateLimitStore = new Map<string, { count: number; resetTime: number }>()
 
-// Rate limit configurations
+// Rate limit configurations (more lenient for demo)
 const RATE_LIMITS = {
-  default: { windowMs: 60000, max: 100 },      // 100 requests per minute
-  auth: { windowMs: 900000, max: 5 },          // 5 auth attempts per 15 minutes
-  api: { windowMs: 60000, max: 60 },           // 60 API calls per minute
-  upload: { windowMs: 3600000, max: 50 },      // 50 uploads per hour
+  default: { windowMs: 60000, max: 200 },      // 200 requests per minute
+  auth: { windowMs: 300000, max: 20 },         // 20 auth attempts per 5 minutes
+  api: { windowMs: 60000, max: 120 },          // 120 API calls per minute
+  upload: { windowMs: 3600000, max: 100 },     // 100 uploads per hour
 }
 
 function getRateLimitKey(ip: string, path: string): string {
-  // Group by path type
-  if (path.startsWith('/api/auth') || path === '/login' || path === '/signup') {
+  // Only rate limit actual auth API calls, not page views
+  if (path.startsWith('/api/auth')) {
     return `auth:${ip}`
   }
   if (path.startsWith('/api/upload') || path.includes('/documents/new')) {
