@@ -507,7 +507,7 @@ export default function OwnerDashboardPage() {
             <div className="bg-white rounded-xl border border-[#37322f]/10 overflow-hidden">
               <div className="px-5 py-4 border-b border-[#37322f]/10 flex items-center justify-between">
                 <h2 className="font-semibold text-[#37322f]">Recent Support Tickets</h2>
-                <button className="text-sm text-[#37322f]/60 hover:text-[#37322f]">View all →</button>
+                <Link href="/owner/support" className="text-sm text-[#37322f]/60 hover:text-[#37322f]">View all →</Link>
               </div>
               <div className="divide-y divide-[#37322f]/5">
                 {[
