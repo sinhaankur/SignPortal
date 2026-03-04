@@ -1,8 +1,10 @@
 'use client'
 
+import { useMemo } from 'react'
 import Link from 'next/link'
 import { Header } from '@/components/header'
 import FooterSection from '@/components/footer-section'
+import SearchWithSuggestions, { SearchSuggestion } from '@/components/search-with-suggestions'
 
 const docCategories = [
   {
@@ -108,6 +110,20 @@ const colorClasses: Record<string, { bg: string; light: string }> = {
 }
 
 export default function DocsPage() {
+  // Generate search suggestions from doc categories
+  const searchSuggestions: SearchSuggestion[] = useMemo(() => {
+    return docCategories.flatMap(category => 
+      category.docs.map(doc => ({
+        id: doc.href,
+        title: doc.title,
+        description: doc.desc,
+        href: doc.href,
+        category: category.title,
+        icon: category.icon
+      }))
+    )
+  }, [])
+
   return (
     <div className="min-h-screen bg-[#f7f5f3]">
       <Header />
@@ -125,16 +141,13 @@ export default function DocsPage() {
           
           {/* Search */}
           <div className="max-w-xl mx-auto">
-            <div className="relative">
-              <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-[#37322f]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <input
-                type="text"
-                placeholder="Search documentation..."
-                className="w-full pl-12 pr-4 py-4 rounded-xl border border-[#37322f]/20 focus:outline-none focus:ring-2 focus:ring-[#37322f]/20 bg-white"
-              />
-            </div>
+            <SearchWithSuggestions
+              placeholder="Search documentation..."
+              suggestions={searchSuggestions}
+              inputClassName="py-4 text-base border-[#37322f]/20"
+              emptyMessage="No documentation found. Try a different search term."
+              showCategoryLabels={true}
+            />
           </div>
         </div>
       </section>

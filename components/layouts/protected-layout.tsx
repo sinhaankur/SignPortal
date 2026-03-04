@@ -1,9 +1,10 @@
 'use client'
 
-import { ReactNode, useState } from 'react'
+import { ReactNode, useState, useMemo } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth, ProtectedRoute, UserRole, ROLE_LABELS } from '@/lib/auth-context'
+import SearchWithSuggestions, { SearchSuggestion } from '@/components/search-with-suggestions'
 
 // ============================================================================
 // Types
@@ -326,6 +327,36 @@ function DashboardSidebar({ isOpen, onClose }: { isOpen: boolean; onClose: () =>
 // Dashboard Header Component
 // ============================================================================
 
+// Dashboard search suggestions
+const dashboardSearchItems: SearchSuggestion[] = [
+  // Documents
+  { id: 'doc-new', title: 'New Document', description: 'Create a new document for signing', href: '/documents/new', category: 'Documents' },
+  { id: 'doc-list', title: 'My Documents', description: 'View all your documents', href: '/documents', category: 'Documents' },
+  { id: 'doc-pending', title: 'Pending Signatures', description: 'Documents waiting for signatures', href: '/documents?status=pending', category: 'Documents' },
+  { id: 'doc-completed', title: 'Completed Documents', description: 'All signed and completed documents', href: '/documents?status=completed', category: 'Documents' },
+  { id: 'doc-drafts', title: 'Draft Documents', description: 'Documents still in draft', href: '/documents?status=draft', category: 'Documents' },
+  
+  // Workflows
+  { id: 'wf-list', title: 'Workflows', description: 'View and manage workflows', href: '/workflows', category: 'Workflows' },
+  { id: 'wf-new', title: 'Create Workflow', description: 'Set up a new approval workflow', href: '/workflows/new', category: 'Workflows' },
+  { id: 'wf-templates', title: 'Workflow Templates', description: 'Browse workflow templates', href: '/workflows/templates', category: 'Workflows' },
+  
+  // Settings
+  { id: 'settings', title: 'Settings', description: 'Account and preferences', href: '/settings', category: 'Settings' },
+  { id: 'team', title: 'Team Management', description: 'Manage team members and roles', href: '/settings/team', category: 'Settings' },
+  { id: 'notifications-settings', title: 'Notification Settings', description: 'Configure your notifications', href: '/settings/notifications', category: 'Settings' },
+  { id: 'profile', title: 'Profile Settings', description: 'Update your profile information', href: '/settings/profile', category: 'Settings' },
+  { id: 'security', title: 'Security Settings', description: 'Password and 2FA settings', href: '/settings/security', category: 'Settings' },
+  
+  // Support
+  { id: 'support', title: 'Support Tickets', description: 'View and create support tickets', href: '/dashboard/support', category: 'Support' },
+  { id: 'support-new', title: 'Create Support Ticket', description: 'Get help from our team', href: '/dashboard/support', category: 'Support' },
+  { id: 'docs', title: 'Documentation', description: 'Browse help documentation', href: '/docs', category: 'Support' },
+  
+  // Notifications
+  { id: 'notifications', title: 'Notifications', description: 'View all notifications', href: '/notifications', category: 'Notifications' },
+]
+
 function DashboardHeader({ onMenuClick }: { onMenuClick: () => void }) {
   const { user } = useAuth()
 
@@ -341,23 +372,16 @@ function DashboardHeader({ onMenuClick }: { onMenuClick: () => void }) {
         </svg>
       </button>
 
-      {/* Search bar */}
+      {/* Search bar with suggestions */}
       <div className="hidden md:flex flex-1 max-w-md mx-4">
-        <div className="relative w-full">
-          <svg
-            className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#37322f]/40"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input
-            type="text"
-            placeholder="Search documents, workflows..."
-            className="w-full pl-10 pr-4 py-2 bg-[#f7f5f3] border border-[#37322f]/10 rounded-lg text-sm text-[#37322f] placeholder-[#37322f]/40 focus:outline-none focus:ring-2 focus:ring-[#37322f]/20"
-          />
-        </div>
+        <SearchWithSuggestions
+          placeholder="Search documents, workflows..."
+          suggestions={dashboardSearchItems}
+          inputClassName="bg-[#f7f5f3]"
+          showCategoryLabels={true}
+          emptyMessage="No results found. Try a different search."
+          maxSuggestions={10}
+        />
       </div>
 
       {/* Right side actions */}

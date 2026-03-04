@@ -1,9 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import Link from 'next/link'
 import { Header } from '@/components/header'
 import FooterSection from '@/components/footer-section'
+import SearchWithSuggestions, { SearchSuggestion } from '@/components/search-with-suggestions'
 
 const supportOptions = [
   {
@@ -100,6 +101,28 @@ export default function SupportPage() {
     setSubmitted(true)
   }
 
+  // Generate search suggestions from FAQs and common help topics
+  const searchSuggestions: SearchSuggestion[] = useMemo(() => {
+    const faqSuggestions = faqs.map((faq, idx) => ({
+      id: `faq-${idx}`,
+      title: faq.q,
+      description: faq.a.substring(0, 100) + '...',
+      href: `#faq-${idx}`,
+      category: 'FAQs'
+    }))
+
+    const helpTopics: SearchSuggestion[] = [
+      { id: 'docs', title: 'Documentation', description: 'Browse our comprehensive guides', href: '/docs', category: 'Resources' },
+      { id: 'api', title: 'API Reference', description: 'Technical API documentation', href: '/api-reference', category: 'Resources' },
+      { id: 'quickstart', title: 'Quick Start Guide', description: 'Get started in 5 minutes', href: '/docs/quickstart', category: 'Resources' },
+      { id: 'security', title: 'Security & Compliance', description: 'Learn about our security measures', href: '/docs/security', category: 'Resources' },
+      { id: 'ticket', title: 'Submit a Ticket', description: 'Create a new support ticket', href: '#submit-ticket', category: 'Support' },
+      { id: 'live-chat', title: 'Live Chat', description: 'Chat with our support team', href: '#live-chat', category: 'Support' },
+    ]
+
+    return [...helpTopics, ...faqSuggestions]
+  }, [])
+
   const filteredFaqs = searchQuery 
     ? faqs.filter(faq => 
         faq.q.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -121,20 +144,17 @@ export default function SupportPage() {
             Find answers in our documentation or get in touch with our support team.
           </p>
           
-          {/* Search */}
+          {/* Search with suggestions */}
           <div className="max-w-xl mx-auto">
-            <div className="relative">
-              <svg className="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-[#37322f]/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
-              <input
-                type="text"
-                placeholder="Search for help..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-12 pr-4 py-4 rounded-xl border border-[#37322f]/20 focus:outline-none focus:ring-2 focus:ring-[#37322f]/20 bg-white"
-              />
-            </div>
+            <SearchWithSuggestions
+              placeholder="Search for help..."
+              suggestions={searchSuggestions}
+              onSearch={(q) => setSearchQuery(q)}
+              inputClassName="py-4 text-base border-[#37322f]/20"
+              emptyMessage="No results found. Try submitting a support ticket below."
+              showCategoryLabels={true}
+              maxSuggestions={10}
+            />
           </div>
         </div>
       </section>
