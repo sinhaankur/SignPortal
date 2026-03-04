@@ -34,14 +34,17 @@ export default function LandingPage() {
             </div>
 
             {/* Headline */}
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif text-[#37322f] leading-[1.1] tracking-tight mb-6">
+            <h1 
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#37322f] leading-[1.1] tracking-tight mb-6"
+              style={{ fontFamily: 'var(--font-instrument-serif), "Instrument Serif", Georgia, serif' }}
+            >
               Sign documents
               <br />
-              <span className="text-[#37322f]/50">in minutes,</span> not days
+              <span className="text-[#37322f]/60">in minutes,</span> not days
             </h1>
 
             {/* Subheadline */}
-            <p className="text-lg md:text-xl text-[#37322f]/70 max-w-[600px] leading-relaxed mb-10 font-sans">
+            <p className="text-lg md:text-xl text-[#37322f]/70 max-w-[600px] leading-relaxed mb-10">
               Enterprise-grade electronic signatures with powerful workflows, 
               custom forms, and bank-level security. Get documents signed faster.
             </p>

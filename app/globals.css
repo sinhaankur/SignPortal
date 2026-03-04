@@ -111,6 +111,11 @@
   font-display: swap;
 }
 
+/* Explicit font-serif class for Tailwind v4 compatibility */
+.font-serif {
+  font-family: var(--font-instrument-serif), "Instrument Serif", Georgia, "Times New Roman", serif !important;
+}
+
 /* Added explicit font loading optimization */
 @supports (font-display: swap) {
   @font-face {
