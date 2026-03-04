@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
+import ProtectedLayout from "@/components/layouts/protected-layout"
 import { 
   Building2, 
   Search, 
@@ -170,79 +171,62 @@ export default function EnterpriseManagementPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800">
-      {/* Header */}
-      <header className="bg-slate-900/80 backdrop-blur-sm border-b border-slate-700 sticky top-0 z-50">
-        <div className="max-w-[1600px] mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Link 
-                href="/admin" 
-                className="flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
-              >
-                <ChevronLeft className="w-5 h-5" />
-                Back to Dashboard
-              </Link>
-            </div>
-            <div className="flex items-center gap-3">
-              <button className="flex items-center gap-2 px-4 py-2 bg-slate-700 text-slate-300 rounded-lg hover:bg-slate-600 transition-colors">
-                <Download className="w-4 h-4" />
-                Export
-              </button>
-              <button 
-                onClick={() => setShowNewEnterpriseModal(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg hover:from-amber-600 hover:to-orange-700 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                New Enterprise
-              </button>
-            </div>
-          </div>
-        </div>
-      </header>
-
-      <div className="max-w-[1600px] mx-auto px-6 py-8">
+    <ProtectedLayout>
+      <div className="space-y-6">
         {/* Page Header */}
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
-              <Building2 className="w-6 h-6 text-blue-400" />
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-[#37322f]/10 rounded-xl flex items-center justify-center">
+              <Building2 className="w-6 h-6 text-[#37322f]" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-white">Enterprise Management</h1>
-              <p className="text-slate-400">Manage all enterprises and their isolated data environments</p>
+              <h1 className="text-2xl font-bold text-[#37322f]">Enterprise Management</h1>
+              <p className="text-[#37322f]/60 text-sm">Manage all enterprises and their isolated data environments</p>
             </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <button className="flex items-center gap-2 px-4 py-2 bg-white text-[#37322f] border border-[#37322f]/20 rounded-lg hover:bg-[#37322f]/5 transition-colors">
+              <Download className="w-4 h-4" />
+              Export
+            </button>
+            <button 
+              onClick={() => setShowNewEnterpriseModal(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-[#37322f] text-white rounded-lg hover:bg-[#37322f]/90 transition-colors"
+            >
+              <Plus className="w-4 h-4" />
+              New Enterprise
+            </button>
           </div>
         </div>
 
         {/* Data Isolation Info Banner */}
-        <div className="bg-gradient-to-r from-purple-900/30 to-blue-900/30 border border-purple-500/30 rounded-2xl p-6 mb-8">
+        <div className="bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-2xl p-6">
           <div className="flex items-start gap-4">
-            <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center flex-shrink-0">
-              <Shield className="w-6 h-6 text-purple-400" />
+            <div className="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
+              <Shield className="w-6 h-6 text-purple-600" />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-semibold text-white mb-2">Airtight Data Isolation Architecture</h3>
-              <p className="text-slate-300 text-sm mb-4">
+              <h3 className="text-lg font-semibold text-[#37322f] mb-2">Airtight Data Isolation Architecture</h3>
+              <p className="text-[#37322f]/70 text-sm mb-4">
                 Each enterprise operates within a completely isolated environment with dedicated database schemas, 
                 segregated encryption keys, and independent storage partitions. Cross-tenant access is technically 
                 restricted at the application layer.
               </p>
               <div className="grid md:grid-cols-4 gap-4">
-                <div className="flex items-center gap-2 text-sm text-slate-400">
-                  <Database className="w-4 h-4 text-purple-400" />
+                <div className="flex items-center gap-2 text-sm text-[#37322f]/70">
+                  <Database className="w-4 h-4 text-purple-600" />
                   <span>Isolated Database Schema</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-slate-400">
-                  <Key className="w-4 h-4 text-green-400" />
+                <div className="flex items-center gap-2 text-sm text-[#37322f]/70">
+                  <Key className="w-4 h-4 text-green-600" />
                   <span>Segregated Encryption Keys</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-slate-400">
-                  <HardDrive className="w-4 h-4 text-blue-400" />
+                <div className="flex items-center gap-2 text-sm text-[#37322f]/70">
+                  <HardDrive className="w-4 h-4 text-blue-600" />
                   <span>Independent Storage</span>
                 </div>
-                <div className="flex items-center gap-2 text-sm text-slate-400">
-                  <Lock className="w-4 h-4 text-amber-400" />
+                <div className="flex items-center gap-2 text-sm text-[#37322f]/70">
+                  <Lock className="w-4 h-4 text-amber-600" />
                   <span>Tenant-Level Access Control</span>
                 </div>
               </div>
@@ -251,62 +235,62 @@ export default function EnterpriseManagementPage() {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid md:grid-cols-4 gap-4 mb-8">
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4">
+        <div className="grid md:grid-cols-4 gap-4">
+          <div className="bg-white rounded-xl border border-[#37322f]/10 p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-400">Total Enterprises</p>
-                <p className="text-2xl font-bold text-white">{enterprises.length}</p>
+                <p className="text-sm text-[#37322f]/60">Total Enterprises</p>
+                <p className="text-2xl font-bold text-[#37322f]">{enterprises.length}</p>
               </div>
-              <Building2 className="w-8 h-8 text-blue-400/50" />
+              <Building2 className="w-8 h-8 text-blue-500/50" />
             </div>
           </div>
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4">
+          <div className="bg-white rounded-xl border border-[#37322f]/10 p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-400">Enterprise Tier</p>
-                <p className="text-2xl font-bold text-white">{enterprises.filter(e => e.tier === "Enterprise").length}</p>
+                <p className="text-sm text-[#37322f]/60">Enterprise Tier</p>
+                <p className="text-2xl font-bold text-[#37322f]">{enterprises.filter(e => e.tier === "Enterprise").length}</p>
               </div>
-              <Shield className="w-8 h-8 text-purple-400/50" />
+              <Shield className="w-8 h-8 text-purple-500/50" />
             </div>
           </div>
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4">
+          <div className="bg-white rounded-xl border border-[#37322f]/10 p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-400">AD Sync Enabled</p>
-                <p className="text-2xl font-bold text-white">{enterprises.filter(e => e.adSync).length}</p>
+                <p className="text-sm text-[#37322f]/60">AD Sync Enabled</p>
+                <p className="text-2xl font-bold text-[#37322f]">{enterprises.filter(e => e.adSync).length}</p>
               </div>
-              <RefreshCw className="w-8 h-8 text-green-400/50" />
+              <RefreshCw className="w-8 h-8 text-green-500/50" />
             </div>
           </div>
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4">
+          <div className="bg-white rounded-xl border border-[#37322f]/10 p-4 shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-slate-400">Total Users</p>
-                <p className="text-2xl font-bold text-white">{enterprises.reduce((sum, e) => sum + e.users, 0).toLocaleString()}</p>
+                <p className="text-sm text-[#37322f]/60">Total Users</p>
+                <p className="text-2xl font-bold text-[#37322f]">{enterprises.reduce((sum, e) => sum + e.users, 0).toLocaleString()}</p>
               </div>
-              <Users className="w-8 h-8 text-amber-400/50" />
+              <Users className="w-8 h-8 text-amber-500/50" />
             </div>
           </div>
         </div>
 
         {/* Filters & Search */}
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-4 mb-6">
+        <div className="bg-white rounded-xl border border-[#37322f]/10 p-4 shadow-sm">
           <div className="flex flex-wrap items-center gap-4">
             <div className="relative flex-1 min-w-[300px]">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#37322f]/40" />
               <input
                 type="text"
                 placeholder="Search enterprises by name or domain..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                className="w-full pl-10 pr-4 py-2 bg-[#F7F5F3] border border-[#37322f]/10 rounded-lg text-[#37322f] placeholder:text-[#37322f]/40 focus:outline-none focus:ring-2 focus:ring-[#37322f]/20"
               />
             </div>
             <select
               value={filterTier}
               onChange={(e) => setFilterTier(e.target.value)}
-              className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+              className="px-4 py-2 bg-[#F7F5F3] border border-[#37322f]/10 rounded-lg text-[#37322f] focus:outline-none focus:ring-2 focus:ring-[#37322f]/20"
             >
               <option value="all">All Tiers</option>
               <option value="Enterprise">Enterprise</option>
@@ -316,7 +300,7 @@ export default function EnterpriseManagementPage() {
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+              className="px-4 py-2 bg-[#F7F5F3] border border-[#37322f]/10 rounded-lg text-[#37322f] focus:outline-none focus:ring-2 focus:ring-[#37322f]/20"
             >
               <option value="all">All Status</option>
               <option value="active">Active</option>
@@ -328,16 +312,16 @@ export default function EnterpriseManagementPage() {
 
         {/* Bulk Actions */}
         {selectedEnterprises.length > 0 && (
-          <div className="bg-amber-900/30 border border-amber-500/30 rounded-xl p-4 mb-6">
+          <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
             <div className="flex items-center justify-between">
-              <span className="text-amber-400">
+              <span className="text-amber-700">
                 {selectedEnterprises.length} enterprise(s) selected
               </span>
               <div className="flex items-center gap-3">
-                <button className="px-3 py-1.5 text-sm bg-slate-700 text-slate-300 rounded-lg hover:bg-slate-600">
+                <button className="px-3 py-1.5 text-sm bg-white text-[#37322f] border border-[#37322f]/20 rounded-lg hover:bg-[#37322f]/5">
                   Export Selected
                 </button>
-                <button className="px-3 py-1.5 text-sm bg-red-600/20 text-red-400 rounded-lg hover:bg-red-600/30">
+                <button className="px-3 py-1.5 text-sm bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100">
                   Suspend Selected
                 </button>
               </div>
@@ -346,178 +330,180 @@ export default function EnterpriseManagementPage() {
         )}
 
         {/* Enterprise Table */}
-        <div className="bg-slate-800/50 rounded-xl border border-slate-700 overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-slate-700/50">
-              <tr>
-                <th className="py-4 px-4 text-left">
-                  <input
-                    type="checkbox"
-                    checked={selectedEnterprises.length === filteredEnterprises.length && filteredEnterprises.length > 0}
-                    onChange={selectAll}
-                    className="w-4 h-4 rounded border-slate-500 text-amber-500 focus:ring-amber-500/50"
-                  />
-                </th>
-                <th className="py-4 px-4 text-left text-sm font-medium text-slate-400">Enterprise</th>
-                <th className="py-4 px-4 text-left text-sm font-medium text-slate-400">Industry</th>
-                <th className="py-4 px-4 text-left text-sm font-medium text-slate-400">Users</th>
-                <th className="py-4 px-4 text-left text-sm font-medium text-slate-400">Tier</th>
-                <th className="py-4 px-4 text-left text-sm font-medium text-slate-400">Data Silo</th>
-                <th className="py-4 px-4 text-left text-sm font-medium text-slate-400">AD Sync</th>
-                <th className="py-4 px-4 text-left text-sm font-medium text-slate-400">Status</th>
-                <th className="py-4 px-4 text-right text-sm font-medium text-slate-400">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredEnterprises.map((enterprise) => (
-                <tr key={enterprise.id} className="border-t border-slate-700/50 hover:bg-slate-700/20">
-                  <td className="py-4 px-4">
+        <div className="bg-white rounded-xl border border-[#37322f]/10 overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-[#F7F5F3]">
+                <tr>
+                  <th className="py-4 px-4 text-left">
                     <input
                       type="checkbox"
-                      checked={selectedEnterprises.includes(enterprise.id)}
-                      onChange={() => toggleSelect(enterprise.id)}
-                      className="w-4 h-4 rounded border-slate-500 text-amber-500 focus:ring-amber-500/50"
+                      checked={selectedEnterprises.length === filteredEnterprises.length && filteredEnterprises.length > 0}
+                      onChange={selectAll}
+                      className="w-4 h-4 rounded border-[#37322f]/30 text-[#37322f] focus:ring-[#37322f]/20"
                     />
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-slate-700 rounded-lg flex items-center justify-center">
-                        <Building2 className="w-5 h-5 text-slate-400" />
-                      </div>
-                      <div>
-                        <p className="font-medium text-white">{enterprise.name}</p>
-                        <p className="text-xs text-slate-400">{enterprise.domain}</p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4 text-slate-300">{enterprise.industry}</td>
-                  <td className="py-4 px-4">
-                    <div>
-                      <p className="text-white">{enterprise.users.toLocaleString()}</p>
-                      <p className="text-xs text-slate-400">{enterprise.documents.toLocaleString()} docs</p>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      enterprise.tier === 'Enterprise' 
-                        ? 'bg-purple-500/20 text-purple-400' 
-                        : enterprise.tier === 'Business'
-                        ? 'bg-blue-500/20 text-blue-400'
-                        : 'bg-slate-500/20 text-slate-400'
-                    }`}>
-                      {enterprise.tier}
-                    </span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="flex items-center gap-2">
-                      <Lock className="w-4 h-4 text-green-400" />
-                      <span className="text-slate-300 font-mono text-sm">{enterprise.silo}</span>
-                    </div>
-                  </td>
-                  <td className="py-4 px-4">
-                    {enterprise.adSync ? (
-                      <span className="flex items-center gap-2 text-green-400">
-                        <CheckCircle className="w-4 h-4" />
-                        <span className="text-sm">Enabled</span>
-                      </span>
-                    ) : (
-                      <span className="flex items-center gap-2 text-slate-400">
-                        <Clock className="w-4 h-4" />
-                        <span className="text-sm">Disabled</span>
-                      </span>
-                    )}
-                  </td>
-                  <td className="py-4 px-4">
-                    <span className={`flex items-center gap-2 ${
-                      enterprise.status === 'active' ? 'text-green-400' :
-                      enterprise.status === 'pending' ? 'text-yellow-400' : 'text-red-400'
-                    }`}>
-                      <span className={`w-2 h-2 rounded-full ${
-                        enterprise.status === 'active' ? 'bg-green-400' :
-                        enterprise.status === 'pending' ? 'bg-yellow-400' : 'bg-red-400'
-                      }`}></span>
-                      <span className="capitalize text-sm">{enterprise.status}</span>
-                    </span>
-                  </td>
-                  <td className="py-4 px-4">
-                    <div className="flex items-center justify-end gap-2">
-                      <button className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors">
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors">
-                        <Edit className="w-4 h-4" />
-                      </button>
-                      <button className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-colors">
-                        <Settings className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
+                  </th>
+                  <th className="py-4 px-4 text-left text-sm font-medium text-[#37322f]/60">Enterprise</th>
+                  <th className="py-4 px-4 text-left text-sm font-medium text-[#37322f]/60">Industry</th>
+                  <th className="py-4 px-4 text-left text-sm font-medium text-[#37322f]/60">Users</th>
+                  <th className="py-4 px-4 text-left text-sm font-medium text-[#37322f]/60">Tier</th>
+                  <th className="py-4 px-4 text-left text-sm font-medium text-[#37322f]/60">Data Silo</th>
+                  <th className="py-4 px-4 text-left text-sm font-medium text-[#37322f]/60">AD Sync</th>
+                  <th className="py-4 px-4 text-left text-sm font-medium text-[#37322f]/60">Status</th>
+                  <th className="py-4 px-4 text-right text-sm font-medium text-[#37322f]/60">Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filteredEnterprises.map((enterprise) => (
+                  <tr key={enterprise.id} className="border-t border-[#37322f]/10 hover:bg-[#F7F5F3]/50">
+                    <td className="py-4 px-4">
+                      <input
+                        type="checkbox"
+                        checked={selectedEnterprises.includes(enterprise.id)}
+                        onChange={() => toggleSelect(enterprise.id)}
+                        className="w-4 h-4 rounded border-[#37322f]/30 text-[#37322f] focus:ring-[#37322f]/20"
+                      />
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-[#37322f]/10 rounded-lg flex items-center justify-center">
+                          <Building2 className="w-5 h-5 text-[#37322f]/60" />
+                        </div>
+                        <div>
+                          <p className="font-medium text-[#37322f]">{enterprise.name}</p>
+                          <p className="text-xs text-[#37322f]/50">{enterprise.domain}</p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4 text-[#37322f]/80">{enterprise.industry}</td>
+                    <td className="py-4 px-4">
+                      <div>
+                        <p className="text-[#37322f] font-medium">{enterprise.users.toLocaleString()}</p>
+                        <p className="text-xs text-[#37322f]/50">{enterprise.documents.toLocaleString()} docs</p>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4">
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        enterprise.tier === 'Enterprise' 
+                          ? 'bg-purple-100 text-purple-700' 
+                          : enterprise.tier === 'Business'
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'bg-gray-100 text-gray-700'
+                      }`}>
+                        {enterprise.tier}
+                      </span>
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="flex items-center gap-2">
+                        <Lock className="w-4 h-4 text-green-600" />
+                        <span className="text-[#37322f]/80 font-mono text-sm">{enterprise.silo}</span>
+                      </div>
+                    </td>
+                    <td className="py-4 px-4">
+                      {enterprise.adSync ? (
+                        <span className="flex items-center gap-2 text-green-600">
+                          <CheckCircle className="w-4 h-4" />
+                          <span className="text-sm">Enabled</span>
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-2 text-[#37322f]/50">
+                          <Clock className="w-4 h-4" />
+                          <span className="text-sm">Disabled</span>
+                        </span>
+                      )}
+                    </td>
+                    <td className="py-4 px-4">
+                      <span className={`flex items-center gap-2 ${
+                        enterprise.status === 'active' ? 'text-green-600' :
+                        enterprise.status === 'pending' ? 'text-yellow-600' : 'text-red-600'
+                      }`}>
+                        <span className={`w-2 h-2 rounded-full ${
+                          enterprise.status === 'active' ? 'bg-green-500' :
+                          enterprise.status === 'pending' ? 'bg-yellow-500' : 'bg-red-500'
+                        }`}></span>
+                        <span className="capitalize text-sm">{enterprise.status}</span>
+                      </span>
+                    </td>
+                    <td className="py-4 px-4">
+                      <div className="flex items-center justify-end gap-2">
+                        <button className="p-2 text-[#37322f]/60 hover:text-[#37322f] hover:bg-[#37322f]/5 rounded-lg transition-colors">
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        <button className="p-2 text-[#37322f]/60 hover:text-[#37322f] hover:bg-[#37322f]/5 rounded-lg transition-colors">
+                          <Edit className="w-4 h-4" />
+                        </button>
+                        <button className="p-2 text-[#37322f]/60 hover:text-[#37322f] hover:bg-[#37322f]/5 rounded-lg transition-colors">
+                          <Settings className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Compliance & Architecture Info */}
-        <div className="grid md:grid-cols-2 gap-6 mt-8">
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <Shield className="w-5 h-5 text-green-400" />
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="bg-white rounded-xl border border-[#37322f]/10 p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-[#37322f] mb-4 flex items-center gap-2">
+              <Shield className="w-5 h-5 text-green-600" />
               Compliance Ready Architecture
             </h3>
             <div className="space-y-3">
-              <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg">
-                <span className="text-slate-300">HIPAA Compliant</span>
-                <CheckCircle className="w-5 h-5 text-green-400" />
+              <div className="flex items-center justify-between p-3 bg-[#F7F5F3] rounded-lg">
+                <span className="text-[#37322f]/80">HIPAA Compliant</span>
+                <CheckCircle className="w-5 h-5 text-green-600" />
               </div>
-              <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg">
-                <span className="text-slate-300">GDPR Ready</span>
-                <CheckCircle className="w-5 h-5 text-green-400" />
+              <div className="flex items-center justify-between p-3 bg-[#F7F5F3] rounded-lg">
+                <span className="text-[#37322f]/80">GDPR Ready</span>
+                <CheckCircle className="w-5 h-5 text-green-600" />
               </div>
-              <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg">
-                <span className="text-slate-300">SOC2 Architecture</span>
-                <CheckCircle className="w-5 h-5 text-green-400" />
+              <div className="flex items-center justify-between p-3 bg-[#F7F5F3] rounded-lg">
+                <span className="text-[#37322f]/80">SOC2 Architecture</span>
+                <CheckCircle className="w-5 h-5 text-green-600" />
               </div>
-              <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg">
-                <span className="text-slate-300">Zero Cross-Tenant Visibility</span>
-                <CheckCircle className="w-5 h-5 text-green-400" />
+              <div className="flex items-center justify-between p-3 bg-[#F7F5F3] rounded-lg">
+                <span className="text-[#37322f]/80">Zero Cross-Tenant Visibility</span>
+                <CheckCircle className="w-5 h-5 text-green-600" />
               </div>
             </div>
           </div>
 
-          <div className="bg-slate-800/50 rounded-xl border border-slate-700 p-6">
-            <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-              <Database className="w-5 h-5 text-purple-400" />
+          <div className="bg-white rounded-xl border border-[#37322f]/10 p-6 shadow-sm">
+            <h3 className="text-lg font-semibold text-[#37322f] mb-4 flex items-center gap-2">
+              <Database className="w-5 h-5 text-purple-600" />
               Data Silo Provisioning
             </h3>
-            <p className="text-slate-400 text-sm mb-4">
+            <p className="text-[#37322f]/60 text-sm mb-4">
               Each new enterprise is automatically provisioned with:
             </p>
-            <ul className="space-y-2 text-sm text-slate-300">
+            <ul className="space-y-2 text-sm text-[#37322f]/80">
               <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 bg-purple-400 rounded-full"></span>
-                Dedicated MySQL schema with isolated tables
+                <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
+                Dedicated PostgreSQL schema with isolated tables
               </li>
               <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 bg-purple-400 rounded-full"></span>
+                <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
                 Unique AES-256 encryption key per tenant
               </li>
               <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 bg-purple-400 rounded-full"></span>
+                <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
                 Separate storage partition for documents
               </li>
               <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 bg-purple-400 rounded-full"></span>
+                <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
                 Independent audit log stream
               </li>
               <li className="flex items-center gap-2">
-                <span className="w-1.5 h-1.5 bg-purple-400 rounded-full"></span>
+                <span className="w-1.5 h-1.5 bg-purple-500 rounded-full"></span>
                 Dedicated Redis cache namespace
               </li>
             </ul>
           </div>
         </div>
       </div>
-    </div>
+    </ProtectedLayout>
   )
 }
