@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import ProtectedLayout from '@/components/layouts/protected-layout'
 import { useAuth } from '@/lib/auth-context'
 
@@ -352,80 +352,128 @@ export default function DatabaseConfigPage() {
 
         {/* Backup Tab */}
         {activeTab === 'backup' && (
-          <div className="space-y-6">
-            <div className="bg-white rounded-xl border border-[#37322f]/10 p-6">
-              <h2 className="font-semibold text-[#37322f] mb-4">Automated Backups</h2>
-              <div className="space-y-4">
-                <div className="flex items-center justify-between p-4 bg-[#f7f5f3] rounded-lg">
-                  <div>
-                    <p className="font-medium text-[#37322f]">Daily Backup</p>
-                    <p className="text-sm text-[#37322f]/60">Automatic backup at 2:00 AM UTC</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
-                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-[#37322f] peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
-                  </label>
-                </div>
-                <div className="flex items-center justify-between p-4 bg-[#f7f5f3] rounded-lg">
-                  <div>
-                    <p className="font-medium text-[#37322f]">Weekly Full Backup</p>
-                    <p className="text-sm text-[#37322f]/60">Complete database snapshot every Sunday</p>
-                  </div>
-                  <label className="relative inline-flex items-center cursor-pointer">
-                    <input type="checkbox" className="sr-only peer" defaultChecked />
-                    <div className="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-[#37322f] peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
-                  </label>
-                </div>
-                <div className="flex items-center justify-between p-4 bg-[#f7f5f3] rounded-lg">
-                  <div>
-                    <p className="font-medium text-[#37322f]">Retention Period</p>
-                    <p className="text-sm text-[#37322f]/60">Keep backups for 30 days</p>
-                  </div>
-                  <select className="px-3 py-2 border border-[#37322f]/10 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#37322f]/20">
-                    <option>7 days</option>
-                    <option selected>30 days</option>
-                    <option>90 days</option>
-                    <option>365 days</option>
-                  </select>
-                </div>
-              </div>
-            </div>
+          <BackupRestoreTab />
+        )}
+// --- BackupRestoreTab Component ---
+function BackupRestoreTab() {
+  const [source, setSource] = useState<'local' | 'supabase'>('local')
+  const [backups, setBackups] = useState<string[]>([])
+  const [loading, setLoading] = useState(false)
+  const [message, setMessage] = useState('')
 
-            <div className="bg-white rounded-xl border border-[#37322f]/10 p-6">
-              <h2 className="font-semibold text-[#37322f] mb-4">Manual Backup</h2>
-              <p className="text-sm text-[#37322f]/60 mb-4">Create an immediate backup of your database</p>
-              <button className="px-4 py-2 bg-[#37322f] text-white rounded-lg hover:bg-[#4a433f] transition-colors">
-                Create Backup Now
-              </button>
-            </div>
+  // Fetch backups on source change
+  useEffect(() => {
+    setLoading(true)
+    fetch(`/api/backup/${source}`)
+      .then(res => res.json())
+      .then(data => {
+        setBackups(Array.isArray(data.backups) ? data.backups : [])
+        setLoading(false)
+      })
+  }, [source])
 
-            <div className="bg-white rounded-xl border border-[#37322f]/10 p-6">
-              <h2 className="font-semibold text-[#37322f] mb-4">Recent Backups</h2>
-              <div className="space-y-3">
-                {[
-                  { date: 'March 3, 2026 2:00 AM', size: '2.4 GB', type: 'Daily', status: 'completed' },
-                  { date: 'March 2, 2026 2:00 AM', size: '2.3 GB', type: 'Daily', status: 'completed' },
-                  { date: 'February 25, 2026', size: '12.1 GB', type: 'Weekly Full', status: 'completed' },
-                ].map((backup, idx) => (
-                  <div key={idx} className="flex items-center justify-between p-3 border border-[#37322f]/10 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
-                        <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-[#37322f]">{backup.date}</p>
-                        <p className="text-xs text-[#37322f]/50">{backup.type} • {backup.size}</p>
-                      </div>
-                    </div>
-                    <button className="text-sm text-[#37322f]/60 hover:text-[#37322f]">Restore →</button>
+  const createBackup = async () => {
+    setLoading(true)
+    setMessage('Creating backup...')
+    const res = await fetch(`/api/backup/${source}`, { method: 'POST' })
+    const data = await res.json()
+    if (data.success) {
+      setMessage('Backup created!')
+      setBackups(b => [data.filename, ...b])
+    } else {
+      setMessage(data.error || 'Failed to create backup')
+    }
+    setLoading(false)
+  }
+
+  const restoreBackup = async (filename: string) => {
+    setLoading(true)
+    setMessage('Restoring backup...')
+    const res = await fetch('/api/backup/restore', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ source, filename })
+    })
+    const data = await res.json()
+    if (data.success) {
+      setMessage('Restore successful!')
+    } else {
+      setMessage(data.error || 'Restore failed')
+    }
+    setLoading(false)
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="bg-white rounded-xl border border-[#37322f]/10 p-6">
+        <h2 className="font-semibold text-[#37322f] mb-4">Backup Source</h2>
+        <div className="flex gap-4 mb-2">
+          <button
+            className={`px-4 py-2 rounded-lg font-medium border transition-colors ${source === 'local' ? 'bg-[#37322f] text-white border-[#37322f]' : 'bg-white text-[#37322f] border-[#37322f]/20 hover:bg-[#37322f]/5'}`}
+            onClick={() => setSource('local')}
+            disabled={loading}
+          >
+            Local File
+          </button>
+          <button
+            className={`px-4 py-2 rounded-lg font-medium border transition-colors ${source === 'supabase' ? 'bg-[#37322f] text-white border-[#37322f]' : 'bg-white text-[#37322f] border-[#37322f]/20 hover:bg-[#37322f]/5'}`}
+            onClick={() => setSource('supabase')}
+            disabled={loading}
+          >
+            Supabase Storage
+          </button>
+        </div>
+        <p className="text-sm text-[#37322f]/60 mb-2">Choose where to store and restore your backups.</p>
+      </div>
+
+      <div className="bg-white rounded-xl border border-[#37322f]/10 p-6">
+        <h2 className="font-semibold text-[#37322f] mb-4">Manual Backup</h2>
+        <p className="text-sm text-[#37322f]/60 mb-4">Create an immediate backup of your database to the selected source.</p>
+        <button
+          className="px-4 py-2 bg-[#37322f] text-white rounded-lg hover:bg-[#4a433f] transition-colors disabled:opacity-50"
+          onClick={createBackup}
+          disabled={loading}
+        >
+          {loading ? 'Processing...' : 'Create Backup Now'}
+        </button>
+        {message && <p className="mt-3 text-sm text-[#37322f]/70">{message}</p>}
+      </div>
+
+      <div className="bg-white rounded-xl border border-[#37322f]/10 p-6">
+        <h2 className="font-semibold text-[#37322f] mb-4">Recent Backups</h2>
+        {loading ? (
+          <div className="text-[#37322f]/60">Loading...</div>
+        ) : backups.length === 0 ? (
+          <div className="text-[#37322f]/60">No backups found.</div>
+        ) : (
+          <div className="space-y-3">
+            {backups.map((filename, idx) => (
+              <div key={filename} className="flex items-center justify-between p-3 border border-[#37322f]/10 rounded-lg">
+                <div className="flex items-center gap-3">
+                  <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                    <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                    </svg>
                   </div>
-                ))}
+                  <div>
+                    <p className="text-sm font-medium text-[#37322f]">{filename}</p>
+                  </div>
+                </div>
+                <button
+                  className="text-sm text-[#37322f]/60 hover:text-[#37322f]"
+                  onClick={() => restoreBackup(filename)}
+                  disabled={loading}
+                >
+                  Restore →
+                </button>
               </div>
-            </div>
+            ))}
           </div>
         )}
+      </div>
+    </div>
+  )
+}
 
         {/* Migration Tab */}
         {activeTab === 'migration' && (

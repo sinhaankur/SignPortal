@@ -22,6 +22,8 @@ export default function PricingSection() {
 
   return (
     <div className="w-full flex flex-col justify-center items-center gap-2">
+      <div className="w-full flex justify-center">
+        <div className="w-full max-w-6xl flex flex-col justify-center items-center gap-2">
       {/* Header Section */}
       <div className="self-stretch px-6 md:px-24 py-12 md:py-16 border-b border-[rgba(55,50,47,0.12)] flex justify-center items-center gap-6">
         <div className="w-full max-w-[586px] px-6 py-5 shadow-[0px_2px_4px_rgba(50,45,43,0.06)] overflow-hidden rounded-lg flex flex-col justify-start items-center gap-4 shadow-none">
@@ -105,7 +107,7 @@ export default function PricingSection() {
 
       {/* Pricing Cards Section */}
       <div className="self-stretch border-b border-t border-[rgba(55,50,47,0.12)] flex justify-center items-center">
-        <div className="flex justify-center items-start w-full">
+        <div className="flex justify-center items-start w-full max-w-6xl">
           {/* Left Decorative Pattern */}
           <div className="w-12 self-stretch relative overflow-hidden hidden md:block">
             <div className="w-[162px] left-[-58px] top-[-120px] absolute flex flex-col justify-start items-start">
@@ -295,33 +297,8 @@ export default function PricingSection() {
 
                 <div className="self-stretch flex flex-col justify-start items-start gap-2">
                   <div className="flex flex-col justify-start items-start gap-1">
-                    <div className="relative h-[60px] flex items-center text-[#37322F] text-5xl font-medium leading-[60px] font-serif">
-                      <span className="invisible">${pricing.enterprise[billingPeriod]}</span>
-                      <span
-                        className="absolute inset-0 flex items-center transition-all duration-500"
-                        style={{
-                          opacity: billingPeriod === "annually" ? 1 : 0,
-                          transform: `scale(${billingPeriod === "annually" ? 1 : 0.8})`,
-                          filter: `blur(${billingPeriod === "annually" ? 0 : 4}px)`,
-                        }}
-                        aria-hidden={billingPeriod !== "annually"}
-                      >
-                        ${pricing.enterprise.annually}
-                      </span>
-                      <span
-                        className="absolute inset-0 flex items-center transition-all duration-500"
-                        style={{
-                          opacity: billingPeriod === "monthly" ? 1 : 0,
-                          transform: `scale(${billingPeriod === "monthly" ? 1 : 0.8})`,
-                          filter: `blur(${billingPeriod === "monthly" ? 0 : 4}px)`,
-                        }}
-                        aria-hidden={billingPeriod !== "monthly"}
-                      >
-                        ${pricing.enterprise.monthly}
-                      </span>
-                    </div>
-                    <div className="text-[#847971] text-sm font-medium font-sans">
-                      per {billingPeriod === "monthly" ? "month" : "year"}, per user.
+                    <div className="relative h-[60px] flex items-center text-[#37322F] text-2xl font-medium leading-[60px] font-serif">
+                      <span className="">Contact sales for pricing</span>
                     </div>
                   </div>
                 </div>
@@ -377,6 +354,46 @@ export default function PricingSection() {
               ))}
             </div>
           </div>
+        </div>
+      </div>
+      {/* FAQ Section */}
+      <div className="w-full max-w-4xl mx-auto mt-16 mb-8">
+        <h2 className="text-2xl md:text-3xl font-semibold text-[#37322f] text-center mb-8">Frequently Asked Questions</h2>
+        <div className="space-y-4">
+          {/* Example FAQ items, replace with your actual FAQ data */}
+          <details className="group bg-[#f7f5f3] rounded-xl overflow-hidden">
+            <summary className="p-4 cursor-pointer list-none flex items-center justify-between font-medium text-[#37322f]">
+              How do I reset my password?
+              <svg className="w-5 h-5 text-[#37322f]/60 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div className="px-4 pb-4 text-[#37322f]/70">
+              Click "Forgot Password" on the login page. You'll receive an email with a reset link valid for 24 hours.
+            </div>
+          </details>
+          <details className="group bg-[#f7f5f3] rounded-xl overflow-hidden">
+            <summary className="p-4 cursor-pointer list-none flex items-center justify-between font-medium text-[#37322f]">
+              Can I cancel a document after sending?
+              <svg className="w-5 h-5 text-[#37322f]/60 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div className="px-4 pb-4 text-[#37322f]/70">
+              Yes, go to the document in your dashboard and click "Void". All signers will be notified that the document has been cancelled.
+            </div>
+          </details>
+          <details className="group bg-[#f7f5f3] rounded-xl overflow-hidden">
+            <summary className="p-4 cursor-pointer list-none flex items-center justify-between font-medium text-[#37322f]">
+              What file formats are supported?
+              <svg className="w-5 h-5 text-[#37322f]/60 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <div className="px-4 pb-4 text-[#37322f]/70">
+              We support PDF, Word (.doc, .docx), Excel (.xls, .xlsx), and common image formats (PNG, JPG). Files are converted to PDF for signing.
+            </div>
+          </details>
         </div>
       </div>
     </div>

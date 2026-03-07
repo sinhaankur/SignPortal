@@ -186,6 +186,32 @@ export default function DocumentsPage() {
     completed: documents.filter(d => d.status === 'completed').length,
   }
 
+  // Zero state: no documents at all
+  if (documents.length === 0) {
+    return (
+      <ProtectedLayout>
+        <div className="max-w-2xl mx-auto py-24 text-center">
+          <div className="w-24 h-24 mx-auto mb-8 bg-[#37322f]/5 rounded-full flex items-center justify-center">
+            <svg className="w-12 h-12 text-[#37322f]/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </div>
+          <h1 className="text-3xl font-bold text-[#37322f] mb-2">No Documents Yet</h1>
+          <p className="text-[#37322f]/60 mb-6">You haven’t created or uploaded any documents. Start by creating your first document to begin your e-signature workflow.</p>
+          <Link
+            href="/documents/new"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-[#37322f] text-white rounded-xl font-semibold hover:bg-[#2a2520] transition-colors text-lg"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Create Document
+          </Link>
+        </div>
+      </ProtectedLayout>
+    )
+  }
+
   return (
     <ProtectedLayout>
       <div className="max-w-7xl mx-auto">

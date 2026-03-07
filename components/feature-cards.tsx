@@ -11,9 +11,10 @@ export function FeatureCards() {
       highlighted: false,
     },
     {
-      title: "Data to insights in the minutes",
-      description: "Explore your data, build your dashboard,\nbring your team together.",
+      title: "AI Guard",
+      description: "Advanced AI-powered document security and fraud detection.",
       highlighted: false,
+      badge: "Upcoming",
     },
   ]
 
@@ -35,7 +36,12 @@ export function FeatureCards() {
                   <div className="w-32 h-0.5 bg-[#322d2b]"></div>
                 </div>
               )}
-              <h3 className="text-[#49423d] text-sm font-semibold leading-6">{feature.title}</h3>
+              <div className="flex items-center gap-2">
+                <h3 className="text-[#49423d] text-sm font-semibold leading-6">{feature.title}</h3>
+                {feature.badge && (
+                  <span className="ml-2 px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800 text-xs font-semibold">{feature.badge}</span>
+                )}
+              </div>
               <p className="text-[#605a57] text-sm leading-[22px] whitespace-pre-line">{feature.description}</p>
             </div>
           ))}

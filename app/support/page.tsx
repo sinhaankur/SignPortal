@@ -43,18 +43,6 @@ const supportOptions = [
     available: true,
     hours: 'Mon-Fri, 9am-6pm EST',
   },
-  {
-    icon: (
-      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-      </svg>
-    ),
-    title: 'Screen Share',
-    desc: 'Get hands-on assistance',
-    action: 'Schedule',
-    available: true,
-    hours: 'Enterprise plans only',
-  },
 ]
 
 const faqs = [
@@ -141,7 +129,7 @@ export default function SupportPage() {
             How can we help?
           </h1>
           <p className="text-lg text-[#37322f]/70 max-w-2xl mx-auto mb-8">
-            Find answers in our documentation or get in touch with our support team.
+            <span className="font-semibold text-[#37322f]">Support is available only for paying customers.</span> Find answers in our documentation or get in touch with our support team if you have an active subscription.
           </p>
           
           {/* Search with suggestions */}
@@ -162,8 +150,8 @@ export default function SupportPage() {
       {/* Support Options */}
       <section className="py-12">
         <div className="max-w-[1060px] mx-auto px-4">
-          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {supportOptions.map((option, idx) => (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {supportOptions.filter(opt => opt.title !== 'Screen Share').map((option, idx) => (
               <div key={idx} className="bg-white rounded-2xl border border-[#37322f]/10 p-6 text-center hover:shadow-lg transition-shadow">
                 <div className="w-16 h-16 mx-auto mb-4 bg-[#37322f]/5 rounded-xl flex items-center justify-center text-[#37322f]">
                   {option.icon}
@@ -173,7 +161,7 @@ export default function SupportPage() {
                 <button className="w-full py-2 bg-[#37322f] text-white rounded-lg font-medium hover:bg-[#2a2520] transition-colors">
                   {option.action}
                 </button>
-                <p className="text-xs text-[#37322f]/50 mt-3">{option.hours}</p>
+                <p className="text-xs text-[#37322f]/50 mt-3">Available for paying customers only</p>
               </div>
             ))}
           </div>

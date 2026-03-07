@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { Upload, FileText, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { supabase } from '../lib/supabaseClient'
 
 interface FileUploadProps {
   onUploadComplete: (fileData: UploadedFile) => void
@@ -16,6 +17,7 @@ export interface UploadedFile {
   uploadedAt: string
   uploadProgress: number
   status: 'uploading' | 'completed' | 'error'
+  url?: string
 }
 
 export function FileUploadComponent({ onUploadComplete, documentName, documentType }: FileUploadProps) {
@@ -47,13 +49,21 @@ export function FileUploadComponent({ onUploadComplete, documentName, documentTy
       return
     }
 
-    // Simulate file upload with progress
     setIsUploading(true)
     setUploadProgress(0)
 
     try {
-      // Simulate upload with progress
-      await simulateFileUpload(file)
+      // Upload to Supabase Storage
+      const filePath = `${Date.now()}-${file.name}`
+      const { data, error: uploadError } = await supabase.storage.from('documents').upload(filePath, file, {
+        cacheControl: '3600',
+        upsert: false
+      })
+      if (uploadError) throw uploadError
+
+      // Get public URL
+      const { data: publicUrlData } = supabase.storage.from('documents').getPublicUrl(filePath)
+      const publicUrl = publicUrlData?.publicUrl
 
       const uploadedFileData: UploadedFile = {
         name: file.name,
@@ -61,7 +71,8 @@ export function FileUploadComponent({ onUploadComplete, documentName, documentTy
         size: file.size,
         uploadedAt: new Date().toISOString(),
         uploadProgress: 100,
-        status: 'completed'
+        status: 'completed',
+        url: publicUrl
       }
 
       setUploadedFile(uploadedFileData)
@@ -79,23 +90,7 @@ export function FileUploadComponent({ onUploadComplete, documentName, documentTy
     }
   }
 
-  const simulateFileUpload = (file: File): Promise<void> => {
-    return new Promise((resolve) => {
-      let progress = 0
-      const interval = setInterval(() => {
-        progress += Math.random() * 30
-        if (progress >= 100) {
-          progress = 100
-          setUploadProgress(100)
-          clearInterval(interval)
-          // Simulate network delay
-          setTimeout(resolve, 500)
-        } else {
-          setUploadProgress(Math.min(progress, 99))
-        }
-      }, 200)
-    })
-  }
+  // simulateFileUpload removed (no longer needed)
 
   const formatFileSize = (bytes: number): string => {
     if (bytes === 0) return '0 Bytes'
